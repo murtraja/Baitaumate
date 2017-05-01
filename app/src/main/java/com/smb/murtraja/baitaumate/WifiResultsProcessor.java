@@ -14,6 +14,7 @@ import java.util.List;
 public class WifiResultsProcessor {
     static String octet = "([A-Fa-f0-9]{2})";
     static List<String> getUniqueAPsFromScanResults(List<ScanResult> results, boolean isDirectMode) {
+        //http://stackoverflow.com/a/27046433/4014182
         List<String> uniqueAPs = new ArrayList<>();
         HashMap<String, ScanResult> signalStrength = new HashMap<>();
         for (int i = 0; i < results.size(); i++) {

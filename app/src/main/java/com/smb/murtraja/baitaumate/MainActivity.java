@@ -2,6 +2,7 @@ package com.smb.murtraja.baitaumate;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -41,7 +42,11 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
             }
         });
 
-        startWifiScan();
+        Intent intent = new Intent(this, ConfigureLightActivity.class);
+        this.startActivity(intent);
+
+
+        //startWifiScan();
 
     }
 
