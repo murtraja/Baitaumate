@@ -3,14 +3,11 @@ package com.smb.murtraja.baitaumate;
 import android.graphics.Color;
 import android.util.Log;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by murtraja on 2/5/17.
@@ -42,7 +39,8 @@ public class CommandSender implements Runnable {
             e.printStackTrace();
         }
 
-    }private String getChangeColourCommand(int r, int g, int b) {
+    }
+    private String getChangeColourCommand(int r, int g, int b) {
         StringBuilder sb = new StringBuilder();
         sb.append("#%");
         sb.append(String.format("%03d,%03d,%03d", g,r,b));

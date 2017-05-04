@@ -42,11 +42,8 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
             }
         });
 
-        Intent intent = new Intent(this, ConfigureLightActivity.class);
-        this.startActivity(intent);
 
-
-        //startWifiScan();
+        startWifiScan();
 
     }
 
@@ -57,7 +54,7 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
         ReceiverForScanResultsAvailableAction receiverForScanResultsAvailableAction =
                 new ReceiverForScanResultsAvailableAction(wifiManager, this);
 
-        ((Context)this).registerReceiver(receiverForScanResultsAvailableAction, scanResultsIntent);
+        this.registerReceiver(receiverForScanResultsAvailableAction, scanResultsIntent);
         wifiManager.startScan();
         textView.setText("Searching for Wifi networks...");
     }
@@ -83,12 +80,13 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
     @Override
     protected void onStop() {
         super.onStop();
-        for(WifiConfiguration configuration : wifiManager.getConfiguredNetworks()) {
-            //Log.d(MainActivity.TAG, configuration.SSID);
-            if(configuration.SSID.equals("\"Celerio\"")) {
-                wifiManager.enableNetwork(configuration.networkId, true);
-            }
-        }
+        return;
+//        for(WifiConfiguration configuration : wifiManager.getConfiguredNetworks()) {
+//            //Log.d(MainActivity.TAG, configuration.SSID);
+//            if(configuration.SSID.equals("\"Celerio\"")) {
+//                wifiManager.enableNetwork(configuration.networkId, true);
+//            }
+//        }
 
     }
 
@@ -115,6 +113,8 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
     public void handleWifiStateChangedAction() {
         Toast.makeText(this, "Successfully connected", Toast.LENGTH_SHORT).show();;
         //now make a new activity here!
+        Intent intent = new Intent(this, ConfigureLightActivity.class);
+        this.startActivity(intent);
     }
 }
 
