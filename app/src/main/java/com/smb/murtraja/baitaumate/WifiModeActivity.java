@@ -17,7 +17,8 @@ public class WifiModeActivity extends Activity implements WifiScanDisplayFragmen
         setContentView(R.layout.activity_wifi_mode);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance("p1", "p2");
+        boolean scanDevices = true, checkable = true;
+        Fragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable);
         fragmentTransaction.add(R.id.ll_wifi_mode, wifiScanDisplayFragment);
         fragmentTransaction.commit();
     }

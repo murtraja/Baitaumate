@@ -11,6 +11,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,6 +34,32 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     available WiFi networks, but also display them such that the results
     are clickable, and actions can be performed accordingly
 
+    > INPUT
+        1. scan and display devices or routers (mScanDevices = true or false)
+        2. should the results have a checkbox besides them (mCheckable = true or false)
+
+    > PROCESS
+        1. mCheckable is true
+            > show a checkbox besides every AP
+            > also need to show two buttons - select all and select none
+            > and a final button - configure (which sends ssid and password to all the selected APs)
+            > when user clicks on configure, activity call back will be invoked with a list of ScanResults
+
+        2. mCheckable is false
+            > just a simple list view with simple_list_item will do here
+
+        3. mScanDevices is true
+            > show only APs which have device regex
+
+        4. mScanDevices is false
+            > show APs which are not blank and do not match the device regex
+
+    > OUTPUT
+        1. a call will be made to activity call back handler with the list (l) of *required* ScanResults
+        2. if mCheckable = false, then size(l) = 1
+
+
+    ***OLD COMMENTS BELOW, REMOVED CLICKABLE BEHAVIOUR, NOW HANDLED BY MAIN ACTIVITY***
     > Scan the available WiFi networks
     > Display them
         > if searching for devices, then those APs who follow a pattern should be displayed
@@ -44,17 +71,18 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
             > boolean mCheckable        if true, then display a check box beside each entry (instead of radio?)
             > OnClickListener           what action to perform when clicked (one fragment should not directly communicate with the other)
             > boolean displayDevices    if true, then devices are displayed, else, routers
+    > How will this fragment communicate the results back to main activity
      */
 
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_SCAN_DEVICES = "SCAN_DEVICES";
+    private static final String ARG_CHECKABLE = "CHECKABLE";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private boolean mScanDevices;
+    private boolean mCheckable;
 
     private OnFragmentInteractionListener mListener;
 
@@ -68,20 +96,13 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment WifiScanDisplayFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static WifiScanDisplayFragment newInstance(String param1, String param2) {
+
+
+    public static WifiScanDisplayFragment newInstance(boolean scanDevices, boolean checkable) {
         WifiScanDisplayFragment fragment = new WifiScanDisplayFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putBoolean(ARG_SCAN_DEVICES, scanDevices);
+        args.putBoolean(ARG_CHECKABLE, checkable);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,8 +111,8 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mScanDevices = getArguments().getBoolean(ARG_SCAN_DEVICES);
+            mCheckable = getArguments().getBoolean(ARG_CHECKABLE);
         }
     }
 
@@ -142,6 +163,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        startWifiScan();
     }
 
     @Override
@@ -154,6 +176,17 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     public void onWifiScanResultsAvailable(List<ScanResult> results) {
         List<String> accessPoints = WifiResultsProcessor.getUniqueAPsFromScanResults(results, false);
         mStatusTextView.setText(String.format("Found %d Wifi networks", accessPoints.size()));
+
+        ArrayAdapter<String> arrayAdapter = new WifiScanDisplayArrayAdapter(getActivity(), R.layout.checkbox_list_item, accessPoints);
+        mScanResultsListView.setAdapter(arrayAdapter);
+//        mScanResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                String ssid = ((TextView)view).getText().toString();
+//                Toast.makeText(getActivity(), ""+ssid, Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         mScanAgainButton.setEnabled(true);
     }
