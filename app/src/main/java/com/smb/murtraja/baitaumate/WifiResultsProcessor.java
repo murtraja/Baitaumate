@@ -23,40 +23,64 @@ public class WifiResultsProcessor {
     which are not devices
      */
 
-    static String octetRegex = "([A-Fa-f0-9]{2})";
-    static String deviceRegex = String.format("^%s(:%s){5}$", octetRegex, octetRegex);
-    static List<String> getUniqueAPsFromScanResults(List<ScanResult> results, boolean matchDevices) {
+    private String octetRegex = "([A-Fa-f0-9]{2})";
+    private String deviceRegex = String.format("^%s(:%s){5}$", octetRegex, octetRegex);
+    private HashMap<String, ScanResult>  mAccessPointMap = new HashMap<>();
+    private List<ScanResult> mResults;
+    private List<String> mUniqueAPs = new ArrayList<>();
+
+    public WifiResultsProcessor(List<ScanResult> results) {
+        mResults = results;
+    }
+
+    public List<String> computeUniqueAPsFromScanResults(boolean matchDevices) {
         //http://stackoverflow.com/a/27046433/4014182
-        List<String> uniqueAPs = new ArrayList<>();
-        HashMap<String, ScanResult> signalStrength = new HashMap<>();
-        for (int i = 0; i < results.size(); i++) {
-            ScanResult currentResult = results.get(i);
+        init();
+        for (int i = 0; i < mResults.size(); i++) {
+            ScanResult currentResult = mResults.get(i);
             String ssid = currentResult.SSID;
-            if(!ssidMatchesCriteria(ssid, matchDevices))
-                continue;
-            if(signalStrength.containsKey(ssid)) {
-                //now check which one has greater signal strength
-                ScanResult existingResult = signalStrength.get(ssid);
-                if(existingResult.level < currentResult.level) {
-                    //the new result has better level
-                    Log.d(MainActivity.TAG, String.format("for SSID %s, replacing %d with %d", ssid, existingResult.level, currentResult.level));
-                    signalStrength.put(ssid, currentResult);
-                    //uniqueAPs.set(uniqueAPs.indexOf(ssid))
+            if(ssidMatchesCriteria(ssid, matchDevices)) {
+
+                if (mAccessPointMap.containsKey(ssid)) {
+
+                    //now check which one has greater signal strength and overwrite accordingly
+                    updateMapWithHigherSignalStrength(currentResult);
+
+                } else {
+
+                    //this is a new AP, which matches our criteria and has not been added before
+                    mAccessPointMap.put(ssid, currentResult);
+                    mUniqueAPs.add(ssid);
                 }
-            } else {
-                signalStrength.put(ssid, currentResult);
-                uniqueAPs.add(ssid);
             }
         }
-        Log.d(MainActivity.TAG, String.format("Converted %d results to %d unique results", results.size(), uniqueAPs.size()));
-        return uniqueAPs;
+        Log.d(MainActivity.TAG, String.format("Converted %d results to %d unique results", mResults.size(), mUniqueAPs.size()));
+        return mUniqueAPs;
     }
-    static boolean ssidMatchesCriteria(String ssid, boolean matchDevices) {
+
+    private void init() {
+        mUniqueAPs.clear();
+        mAccessPointMap.clear();
+    }
+
+    private void updateMapWithHigherSignalStrength(ScanResult currentResult) {
+        String ssid = currentResult.SSID;
+        ScanResult existingResult = mAccessPointMap.get(ssid);
+        if(existingResult.level < currentResult.level) {
+            //the new result has better level
+            Log.d(MainActivity.TAG, String.format("for SSID %s, replacing %d with %d", ssid, existingResult.level, currentResult.level));
+            mAccessPointMap.put(ssid, currentResult);
+        }
+    }
+
+    private boolean ssidMatchesCriteria(String ssid, boolean matchDevices) {
         boolean isDevice = ssid.matches(deviceRegex);
+
+        // a small question here, if isDevice is True and matchDevices is False, what should be returned here?
         if(matchDevices)
             return isDevice;
 
-        //time to match routers
+        //time to match (only?) routers
         return "".equals(ssid) ? false : true;
     }
 }

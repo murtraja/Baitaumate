@@ -25,11 +25,15 @@ public class WifiScanDisplayCheckableArrayAdapter extends ArrayAdapter<String> {
     Context mContext;
     LayoutInflater mInflater;
 
-    public WifiScanDisplayCheckableArrayAdapter(Context context, int resource, List<String> accessPoints) {
-        super(context, resource, accessPoints);
+    public WifiScanDisplayCheckableArrayAdapter(Context context, int resource, int textViewResourceId, List<String> accessPoints) {
+        super(context, resource, textViewResourceId, accessPoints);
         mAccessPoints = accessPoints;
         mContext = context;
         mInflater = (LayoutInflater)mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public List<String> getAccessPoints() {
+        return mAccessPoints;
     }
 
     @Override
@@ -38,6 +42,7 @@ public class WifiScanDisplayCheckableArrayAdapter extends ArrayAdapter<String> {
         convertView = mInflater.inflate(R.layout.checkbox_list_item, parent, false);
         CheckBox accessPointCheckBox = (CheckBox) convertView.findViewById(R.id.cb_access_point);
         accessPointCheckBox.setText(accessPoint);
+        convertView.setTag(R.layout.checkbox_list_item, accessPoint);
         return convertView;
     }
 }

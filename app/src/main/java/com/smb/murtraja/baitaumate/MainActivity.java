@@ -8,7 +8,6 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -94,7 +93,8 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
     public void handleScanResultsAvailableAction(List<ScanResult> results) {
         TextView textView = (TextView)findViewById(R.id.tv_status);
         ListView listView = (ListView)findViewById(R.id.lv_scanResults);
-        List<String> accessPoints = WifiResultsProcessor.getUniqueAPsFromScanResults(results, true);
+        WifiResultsProcessor wifiResultsProcessor = new WifiResultsProcessor(results);
+        List<String> accessPoints = wifiResultsProcessor.computeUniqueAPsFromScanResults(true);
         textView.setText(String.format("Found %d Wifi networks", accessPoints.size()));
         ListAdapter listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, accessPoints);
         listView.setAdapter(listAdapter);

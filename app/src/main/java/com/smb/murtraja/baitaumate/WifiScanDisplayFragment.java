@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -95,7 +97,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     private Button mDoneButton;
 
     private WifiManager wifiManager;
-    private List<String> accessPointsSelected = new ArrayList<>();
+    private List<String> mAccessPointsSelected = new ArrayList<>();
 
     public WifiScanDisplayFragment() {
         // Required empty public constructor
@@ -155,9 +157,39 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 
         if(mCheckable) {
             mSelectAllButton = (Button) view.findViewById(R.id.btn_select_all);
+            mSelectAllButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickSelectAllButton();
+                }
+            });
             mSelectNoneButton = (Button) view.findViewById(R.id.btn_select_none);
+            mSelectNoneButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickSelectNoneButton();
+                }
+            });
             mDoneButton = (Button) view.findViewById(R.id.btn_done);
         }
+    }
+    private void setAllCheckBoxesToCheckedValue(boolean value) {
+        for(int i=0; i<mScanResultsListView.getAdapter().getCount(); i++) {
+            LinearLayout ll = (LinearLayout) mScanResultsListView.getChildAt(i);
+            CheckBox cb = (CheckBox) ll.getChildAt(0);
+            cb.setChecked(value);
+        }
+    }
+
+    private void onClickSelectNoneButton() {
+        setAllCheckBoxesToCheckedValue(false);
+        mAccessPointsSelected.clear();
+    }
+
+    private void onClickSelectAllButton() {
+        setAllCheckBoxesToCheckedValue(true);
+        mAccessPointsSelected.clear();
+        mAccessPointsSelected.addAll(((WifiScanDisplayCheckableArrayAdapter)mScanResultsListView.getAdapter()).getAccessPoints());
     }
 
     private void startWifiScan() {
@@ -189,13 +221,17 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 
     @Override
     public void onWifiScanResultsAvailable(List<ScanResult> results) {
-        List<String> accessPoints = WifiResultsProcessor.getUniqueAPsFromScanResults(results, false);
+        WifiResultsProcessor wifiResultsProcessor = new WifiResultsProcessor(results);
+        List<String> accessPoints = wifiResultsProcessor.computeUniqueAPsFromScanResults(false);
         mStatusTextView.setText(String.format("Found %d Wifi networks", accessPoints.size()));
 
-        ArrayAdapter<String> arrayAdapter = new WifiScanDisplayCheckableArrayAdapter(getActivity(), R.layout.checkbox_list_item, accessPoints);
-        mScanResultsListView.setAdapter(arrayAdapter);
+        if(mCheckable) {
+            updateUIWithCheckableAccessPoints(accessPoints);
+        } else {
+            //updateUIWithAccessPoints(accessPoints);
+        }
 
-        mScanResultsListView.setOnItemClickListener(new OnCheckableItemClickListener(accessPointsSelected));
+
 
         /*
         Now we have got the ScanResults, need to display them.
@@ -218,6 +254,14 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 //        });
 
         mScanAgainButton.setEnabled(true);
+    }
+
+    private void updateUIWithCheckableAccessPoints(List<String> accessPoints) {
+        ArrayAdapter<String> arrayAdapter = new WifiScanDisplayCheckableArrayAdapter(getActivity(), R.layout.checkbox_list_item, R.id.cb_access_point, accessPoints);
+        mScanResultsListView.setAdapter(arrayAdapter);
+        mScanResultsListView.setOnItemClickListener(new OnCheckableItemClickListener(mAccessPointsSelected, getActivity()));
+
+        //also set the buttons
     }
 
     @Override

@@ -9,5 +9,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:focusable="false"
+        android:clickable="false"
         android:text="CheckBox" />
 </LinearLayout>
