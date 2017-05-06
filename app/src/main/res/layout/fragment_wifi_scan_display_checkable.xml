@@ -34,25 +34,25 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/btn_select_all"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                android:text="Select All" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/btn_select_none"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                android:text="Select None" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/btn_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                android:text="Done" />
         </LinearLayout>
 
     </LinearLayout>

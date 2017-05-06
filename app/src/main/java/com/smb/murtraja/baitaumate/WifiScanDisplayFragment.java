@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -89,8 +90,12 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     private Button mScanAgainButton;
     private ListView mScanResultsListView;
     private TextView mStatusTextView;
+    private Button mSelectAllButton;
+    private Button mSelectNoneButton;
+    private Button mDoneButton;
 
     private WifiManager wifiManager;
+    private List<String> accessPointsSelected = new ArrayList<>();
 
     public WifiScanDisplayFragment() {
         // Required empty public constructor
@@ -120,7 +125,11 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        if(mCheckable) {
+            return inflater.inflate(R.layout.fragment_wifi_scan_display_checkable, container, false);
+        }
         return inflater.inflate(R.layout.fragment_wifi_scan_display, container, false);
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -143,6 +152,12 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         mStatusTextView = (TextView) view.findViewById(R.id.tv_wifiScanDisplayStatus);
 
         this.wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        if(mCheckable) {
+            mSelectAllButton = (Button) view.findViewById(R.id.btn_select_all);
+            mSelectNoneButton = (Button) view.findViewById(R.id.btn_select_none);
+            mDoneButton = (Button) view.findViewById(R.id.btn_done);
+        }
     }
 
     private void startWifiScan() {
@@ -177,8 +192,22 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         List<String> accessPoints = WifiResultsProcessor.getUniqueAPsFromScanResults(results, false);
         mStatusTextView.setText(String.format("Found %d Wifi networks", accessPoints.size()));
 
-        ArrayAdapter<String> arrayAdapter = new WifiScanDisplayArrayAdapter(getActivity(), R.layout.checkbox_list_item, accessPoints);
+        ArrayAdapter<String> arrayAdapter = new WifiScanDisplayCheckableArrayAdapter(getActivity(), R.layout.checkbox_list_item, accessPoints);
         mScanResultsListView.setAdapter(arrayAdapter);
+
+        mScanResultsListView.setOnItemClickListener(new OnCheckableItemClickListener(accessPointsSelected));
+
+        /*
+        Now we have got the ScanResults, need to display them.
+        if mCheckable = true
+            need an Adapter which correctly maps the results to the view
+            need an OnItemClickListener which checks the boxes, and keeps track of what items are checked, etc.
+            need an OnClickListener for done button, so that when user clicks on it, the items gathered in the previous step is returned to the activity
+        if mCheckable = false
+            need an Adapter, a simple one, just maps text to string
+            need an OnItemClickListener, whenever clicked, that value is sent to the parent activity
+         */
+
 //        mScanResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -19,13 +19,13 @@ import java.util.List;
  * Created by murtraja on 4/5/17.
  */
 
-public class WifiScanDisplayArrayAdapter extends ArrayAdapter<String> {
+public class WifiScanDisplayCheckableArrayAdapter extends ArrayAdapter<String> {
 
     List<String> mAccessPoints;
     Context mContext;
     LayoutInflater mInflater;
 
-    public WifiScanDisplayArrayAdapter(Context context, int resource, List<String> accessPoints) {
+    public WifiScanDisplayCheckableArrayAdapter(Context context, int resource, List<String> accessPoints) {
         super(context, resource, accessPoints);
         mAccessPoints = accessPoints;
         mContext = context;
