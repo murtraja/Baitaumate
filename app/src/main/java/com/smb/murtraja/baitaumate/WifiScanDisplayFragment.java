@@ -1,16 +1,18 @@
 package com.smb.murtraja.baitaumate;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -78,12 +80,12 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
      */
 
 
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SCAN_DEVICES = "SCAN_DEVICES";
     private static final String ARG_CHECKABLE = "CHECKABLE";
 
-    // TODO: Rename and change types of parameters
+
     private boolean mScanDevices;
     private boolean mCheckable;
 
@@ -97,7 +99,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     private Button mDoneButton;
 
     private WifiManager wifiManager;
-    private List<String> mAccessPointsSelected = new ArrayList<>();
+    private List<String> mAccessPointsSelected = new ArrayList<>(); //this holds the final list of APs which the user has selected
 
     public WifiScanDisplayFragment() {
         // Required empty public constructor
@@ -134,12 +136,6 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -163,6 +159,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
                     onClickSelectAllButton();
                 }
             });
+
             mSelectNoneButton = (Button) view.findViewById(R.id.btn_select_none);
             mSelectNoneButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -170,53 +167,56 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
                     onClickSelectNoneButton();
                 }
             });
+
             mDoneButton = (Button) view.findViewById(R.id.btn_done);
+            mDoneButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickDoneButton();
+                }
+            });
+
         }
-    }
-    private void setAllCheckBoxesToCheckedValue(boolean value) {
-        for(int i=0; i<mScanResultsListView.getAdapter().getCount(); i++) {
-            LinearLayout ll = (LinearLayout) mScanResultsListView.getChildAt(i);
-            CheckBox cb = (CheckBox) ll.getChildAt(0);
-            cb.setChecked(value);
-        }
-    }
 
-    private void onClickSelectNoneButton() {
-        setAllCheckBoxesToCheckedValue(false);
-        mAccessPointsSelected.clear();
-    }
-
-    private void onClickSelectAllButton() {
-        setAllCheckBoxesToCheckedValue(true);
-        mAccessPointsSelected.clear();
-        mAccessPointsSelected.addAll(((WifiScanDisplayCheckableArrayAdapter)mScanResultsListView.getAdapter()).getAccessPoints());
-    }
-
-    private void startWifiScan() {
-        this.mScanAgainButton.setEnabled(false);
-        BroadcastReceiver wifiScanReceiver = new WifiScanReceiver(wifiManager, this);
-        IntentFilter intentFilter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        getActivity().registerReceiver(wifiScanReceiver, intentFilter);
-        wifiManager.startScan();
-
+        startWifiScan();
     }
 
     @Override
     public void onAttach(Context context) {
+        //http://stackoverflow.com/questions/32604552/onattach-not-called-in-fragment
         super.onAttach(context);
+        onAttachInit(context);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        onAttachInit(activity);
+    }
+
+    private void onAttachInit(Context context) {
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-        startWifiScan();
+        Log.d(MainActivity.TAG, "inside on attach of fragment");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void startWifiScan() {
+        mScanAgainButton.setEnabled(false);
+        BroadcastReceiver wifiScanReceiver = new WifiScanReceiver(wifiManager, this);
+        IntentFilter intentFilter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        getActivity().registerReceiver(wifiScanReceiver, intentFilter);
+        wifiManager.startScan();
+
     }
 
     @Override
@@ -228,7 +228,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         if(mCheckable) {
             updateUIWithCheckableAccessPoints(accessPoints);
         } else {
-            //updateUIWithAccessPoints(accessPoints);
+            updateUIWithAccessPoints(accessPoints);
         }
 
 
@@ -256,7 +256,25 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         mScanAgainButton.setEnabled(true);
     }
 
+    private void updateUIWithAccessPoints(List<String> accessPoints) {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, accessPoints);
+        mScanResultsListView.setAdapter(arrayAdapter);
+        mScanResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String ssid = ((TextView)view).getText().toString();
+                mAccessPointsSelected.clear();
+                mAccessPointsSelected.add(ssid);
+                sendResultToActivity();
+
+            }
+        });
+    }
+
     private void updateUIWithCheckableAccessPoints(List<String> accessPoints) {
+
+        // TODO : check for null condition
+
         ArrayAdapter<String> arrayAdapter = new WifiScanDisplayCheckableArrayAdapter(getActivity(), R.layout.checkbox_list_item, R.id.cb_access_point, accessPoints);
         mScanResultsListView.setAdapter(arrayAdapter);
         mScanResultsListView.setOnItemClickListener(new OnCheckableItemClickListener(mAccessPointsSelected, getActivity()));
@@ -264,9 +282,31 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         //also set the buttons
     }
 
-    @Override
-    public void onWifiConnected() {
+    private void onClickSelectAllButton() {
+        setAllCheckBoxesToCheckedValue(true);
+        mAccessPointsSelected.clear();
+        mAccessPointsSelected.addAll(((WifiScanDisplayCheckableArrayAdapter)mScanResultsListView.getAdapter()).getAccessPoints());
+    }
 
+    private void onClickSelectNoneButton() {
+        setAllCheckBoxesToCheckedValue(false);
+        mAccessPointsSelected.clear();
+    }
+
+    private void onClickDoneButton() {
+        sendResultToActivity();
+    }
+
+    private void setAllCheckBoxesToCheckedValue(boolean value) {
+        for(int i=0; i<mScanResultsListView.getAdapter().getCount(); i++) {
+            LinearLayout ll = (LinearLayout) mScanResultsListView.getChildAt(i);
+            CheckBox cb = (CheckBox) ll.getChildAt(0);
+            cb.setChecked(value);
+        }
+    }
+
+    private void sendResultToActivity() {
+        mListener.onFragmentInteraction(mAccessPointsSelected);
     }
 
     /**
@@ -280,7 +320,6 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(List<String> accessPointsSelected);
     }
 }

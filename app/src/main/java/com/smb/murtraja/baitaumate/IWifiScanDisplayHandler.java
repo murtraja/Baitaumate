@@ -10,5 +10,4 @@ import java.util.List;
 
 public interface IWifiScanDisplayHandler {
     public void onWifiScanResultsAvailable(List<ScanResult> results);
-    public void onWifiConnected();
 }

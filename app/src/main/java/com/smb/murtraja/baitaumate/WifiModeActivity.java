@@ -3,11 +3,11 @@ package com.smb.murtraja.baitaumate;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.net.Uri;
 import android.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ContentFrameLayout;
+import android.util.Log;
+
+import java.util.List;
 
 public class WifiModeActivity extends Activity implements WifiScanDisplayFragment.OnFragmentInteractionListener{
 
@@ -24,7 +24,7 @@ public class WifiModeActivity extends Activity implements WifiScanDisplayFragmen
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public void onFragmentInteraction(List<String> accessPointsSelected) {
+        Log.d(MainActivity.TAG, String.format("Got %s selectedAceessPoints", accessPointsSelected));
     }
 }
