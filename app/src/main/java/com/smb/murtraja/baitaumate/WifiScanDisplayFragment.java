@@ -23,15 +23,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.smb.murtraja.baitaumate.OnFragmentInteractionListener.FragmentResultType;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link WifiScanDisplayFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link WifiScanDisplayFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class WifiScanDisplayFragment extends Fragment implements IWifiScanDisplayHandler {
 
     /*
@@ -84,12 +77,14 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SCAN_DEVICES = "SCAN_DEVICES";
     private static final String ARG_CHECKABLE = "CHECKABLE";
+    private static final String ARG_RESULT_TYPE = "RESULT_TYPE";
 
 
     private boolean mScanDevices;
     private boolean mCheckable;
 
     private OnFragmentInteractionListener mListener;
+    private FragmentResultType mResultType;
 
     private Button mScanAgainButton;
     private ListView mScanResultsListView;
@@ -107,11 +102,12 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 
 
 
-    public static WifiScanDisplayFragment newInstance(boolean scanDevices, boolean checkable) {
+    public static WifiScanDisplayFragment newInstance(boolean scanDevices, boolean checkable, FragmentResultType resultType) {
         WifiScanDisplayFragment fragment = new WifiScanDisplayFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_SCAN_DEVICES, scanDevices);
         args.putBoolean(ARG_CHECKABLE, checkable);
+        args.putSerializable(ARG_RESULT_TYPE, resultType);
         fragment.setArguments(args);
         return fragment;
     }
@@ -122,6 +118,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         if (getArguments() != null) {
             mScanDevices = getArguments().getBoolean(ARG_SCAN_DEVICES);
             mCheckable = getArguments().getBoolean(ARG_CHECKABLE);
+            mResultType = (FragmentResultType)getArguments().getSerializable(ARG_RESULT_TYPE);
         }
     }
 
@@ -221,6 +218,16 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 
     @Override
     public void onWifiScanResultsAvailable(List<ScanResult> results) {
+        /*
+        Now we have got the ScanResults, need to display them.
+        if mCheckable = true
+            need an Adapter which correctly maps the results to the view
+            need an OnItemClickListener which checks the boxes, and keeps track of what items are checked, etc.
+            need an OnClickListener for done button, so that when user clicks on it, the items gathered in the previous step is returned to the activity
+        if mCheckable = false
+            need an Adapter, a simple one, just maps text to string
+            need an OnItemClickListener, whenever clicked, that value is sent to the parent activity
+         */
         WifiResultsProcessor wifiResultsProcessor = new WifiResultsProcessor(results);
         List<String> accessPoints = wifiResultsProcessor.computeUniqueAPsFromScanResults(false);
         mStatusTextView.setText(String.format("Found %d Wifi networks", accessPoints.size()));
@@ -233,25 +240,6 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 
 
 
-        /*
-        Now we have got the ScanResults, need to display them.
-        if mCheckable = true
-            need an Adapter which correctly maps the results to the view
-            need an OnItemClickListener which checks the boxes, and keeps track of what items are checked, etc.
-            need an OnClickListener for done button, so that when user clicks on it, the items gathered in the previous step is returned to the activity
-        if mCheckable = false
-            need an Adapter, a simple one, just maps text to string
-            need an OnItemClickListener, whenever clicked, that value is sent to the parent activity
-         */
-
-//        mScanResultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                String ssid = ((TextView)view).getText().toString();
-//                Toast.makeText(getActivity(), ""+ssid, Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         mScanAgainButton.setEnabled(true);
     }
@@ -306,20 +294,6 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     }
 
     private void sendResultToActivity() {
-        mListener.onFragmentInteraction(mAccessPointsSelected);
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(List<String> accessPointsSelected);
+        mListener.onFragmentInteraction(mResultType, mAccessPointsSelected);
     }
 }

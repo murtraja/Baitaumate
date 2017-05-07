@@ -16,6 +16,10 @@ import android.util.Log;
 
 public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
 
+    /*
+    Error handling functionality needs to be added here
+     */
+
     String ssid;
     WifiManager wifiManager;
     IWifiStateChangedActionHandler handler;

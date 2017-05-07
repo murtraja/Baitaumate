@@ -15,6 +15,21 @@ import java.util.Scanner;
 
 public class CommandSender implements Runnable {
 
+    /*
+    INPUT
+        > DEVICE_IP
+        > DEVICE_PORT
+        > command
+        > listener
+
+    PROCESS
+        > connects with the device over socket and sends it the command
+        > if the device replies, it returns the reply via the listener
+
+    OUTPUT
+        > the reply received as a string
+     */
+
     IOnCommandSentListener onCommandSentListener;
     String DEVICE_IP = "192.168.4.1";
     int DEVICE_PORT = 1155;
