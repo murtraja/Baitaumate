@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-public class MainActivity extends Activity implements IScanResultsAvailableActionHandler, IWifiStateChangedActionHandler{
+public class MainActivity extends Activity implements IScanResultsAvailableActionHandler, IWifiStateChangedActionListener {
 
     static String TAG = "MMR";
     private WifiManager wifiManager;
@@ -80,10 +80,10 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
     protected void onStop() {
         super.onStop();
         return;
-//        for(WifiConfiguration configuration : wifiManager.getConfiguredNetworks()) {
+//        for(WifiConfiguration configuration : mWifiManager.getConfiguredNetworks()) {
 //            //Log.d(MainActivity.TAG, configuration.SSID);
 //            if(configuration.SSID.equals("\"Celerio\"")) {
-//                wifiManager.enableNetwork(configuration.networkId, true);
+//                mWifiManager.enableNetwork(configuration.networkId, true);
 //            }
 //        }
 
@@ -102,7 +102,7 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String ssid = ((TextView)view).getText().toString();
-//                Toast.makeText(MainActivity.this, ""+ssid, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, ""+mAccessPointName, Toast.LENGTH_SHORT).show();
                 connectToAccessPoint(ssid);
             }
         });
@@ -110,11 +110,13 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
     }
 
     @Override
-    public void handleWifiStateChangedAction() {
-        Toast.makeText(this, "Successfully connected", Toast.LENGTH_SHORT).show();;
-        //now make a new activity here!
-        Intent intent = new Intent(this, ConfigureLightActivity.class);
-        this.startActivity(intent);
+    public void handleWifiStateChangedAction(String accessPointName, boolean successful) {
+        if(successful) {
+            Toast.makeText(this, "Successfully connected", Toast.LENGTH_SHORT).show();
+            //now make a new activity here!
+            Intent intent = new Intent(this, ConfigureLightActivity.class);
+            this.startActivity(intent);
+        }
     }
 }
 

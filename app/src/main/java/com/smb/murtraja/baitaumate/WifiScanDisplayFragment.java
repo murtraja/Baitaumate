@@ -40,7 +40,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         1. mCheckable is true
             > show a checkbox besides every AP
             > also need to show two buttons - select all and select none
-            > and a final button - configure (which sends ssid and password to all the selected APs)
+            > and a final button - configure (which sends mAccessPointName and password to all the selected APs)
             > when user clicks on configure, activity call back will be invoked with a list of ScanResults
 
         2. mCheckable is false
@@ -53,7 +53,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
             > show APs which are not blank and do not match the device regex
 
     > OUTPUT
-        1. a call will be made to activity call back handler with the list (l) of *required* ScanResults
+        1. a call will be made to activity call back mListener with the list (l) of *required* ScanResults
         2. if mCheckable = false, then size(l) = 1
 
 

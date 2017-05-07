@@ -3,8 +3,6 @@ package com.smb.murtraja.baitaumate;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Network;
-import android.net.NetworkInfo;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -20,30 +18,38 @@ public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
     Error handling functionality needs to be added here
      */
 
-    String ssid;
-    WifiManager wifiManager;
-    IWifiStateChangedActionHandler handler;
-    public ReceiverForWifiStateChangedAction(String ssid, WifiManager wifiManager, IWifiStateChangedActionHandler handler) {
-        this.ssid = ssid;
-        this.handler = handler;
-        this.wifiManager = wifiManager;
+    String mAccessPointName;
+    WifiManager mWifiManager;
+    IWifiStateChangedActionListener mListener;
+
+    public ReceiverForWifiStateChangedAction(String accessPointName, WifiManager wifiManager, IWifiStateChangedActionListener listener) {
+        mAccessPointName = accessPointName;
+        mListener = listener;
+        mWifiManager = wifiManager;
     }
     @Override
     public void onReceive(Context context, Intent intent) {
         SupplicantState supplicantState = logAndGetCurrentState(intent);
         boolean isConnected = checkIfConnected(supplicantState);
         if(isConnected) {
-            context.unregisterReceiver(this);
-            this.handler.handleWifiStateChangedAction();
+            sendResultBack(context, true);
+            return;
         }
-
+        if(supplicantState == null) {
+            sendResultBack(context, false);
+            return;
+        }
+    }
+    public void sendResultBack(Context context, boolean successful) {
+        context.unregisterReceiver(this);
+        mListener.handleWifiStateChangedAction(mAccessPointName, successful);
     }
     public boolean checkIfConnected(SupplicantState supplicantState) {
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
 //        if(wifiInfo == null)
 //            return false;
         String currentSSID = wifiInfo.getSSID();
-        if(currentSSID.equals(this.ssid) && supplicantState == SupplicantState.COMPLETED) {
+        if(currentSSID.equals(this.mAccessPointName) && supplicantState == SupplicantState.COMPLETED) {
             Log.d(MainActivity.TAG, String.format("Connected to wifi network %s", currentSSID));
             return true;
         }
@@ -51,6 +57,7 @@ public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
     }
     public SupplicantState logAndGetCurrentState(Intent intent) {
         //http://stackoverflow.com/questions/13318646/android-network-connectivity-states-missing
+        // returns null if there is an error.
         Log.d("WifiReceiver", ">>>>SUPPLICANT_STATE_CHANGED_ACTION<<<<<<");
         SupplicantState supplicantState = ((SupplicantState) intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE));
         switch (supplicantState) {
@@ -97,6 +104,12 @@ public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
                 Log.i("SupplicantState", "Unknown");
                 break;
 
+        }
+
+        int supl_error=intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -1);
+        if(supl_error==WifiManager.ERROR_AUTHENTICATING){
+            Log.i("ERROR_AUTHENTICATING", "ERROR_AUTHENTICATING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            supplicantState = null; //necessary to detect this error
         }
         return supplicantState;
     }

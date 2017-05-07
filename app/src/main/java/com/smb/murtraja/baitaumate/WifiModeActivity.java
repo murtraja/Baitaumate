@@ -11,15 +11,20 @@ import java.util.List;
 
 public class WifiModeActivity extends Activity implements OnFragmentInteractionListener{
 
+    private WifiScanDisplayFragment mWifiScanDisplayFragment;
+    private WifiConnectFragment mWifiConnectFragment;
+    private FragmentManager mFragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_mode);
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        mFragmentManager = getFragmentManager();
         boolean scanDevices = true, checkable = true;
-        Fragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable, FragmentResultType.MULTIPLE_ACCESS_POINT_SELECTED);
-        fragmentTransaction.add(R.id.ll_wifi_mode, wifiScanDisplayFragment);
+//        mWifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable, FragmentResultType.MULTIPLE_ACCESS_POINT_SELECTED);
+        mWifiConnectFragment = WifiConnectFragment.newInstance("Celerio", "hadtochhange", FragmentResultType.ACCESS_POINT_CONNECTED);
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.ll_wifi_mode, mWifiConnectFragment);
         fragmentTransaction.commit();
     }
 
@@ -31,6 +36,11 @@ public class WifiModeActivity extends Activity implements OnFragmentInteractionL
     }
 
     private void onMultipleAcessPointsSelected(List<String> accessPoints) {
-        Log.d(MainActivity.TAG, "Got the following selected Acess Points: "+accessPoints);
+        Log.d(MainActivity.TAG, "Got the following selected Access Points: "+accessPoints);
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.ll_wifi_mode, mWifiScanDisplayFragment);
+        fragmentTransaction.commit();
+
+
     }
 }

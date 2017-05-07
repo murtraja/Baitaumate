@@ -7,9 +7,9 @@ import android.os.CountDownTimer;
  */
 
 public class WifiConnectedReporter extends CountDownTimer {
-    IWifiStateChangedActionHandler wifiStateChangedActionHandler;
+    IWifiStateChangedActionListener wifiStateChangedActionHandler;
     public WifiConnectedReporter(long millisInFuture, long countDownInterval,
-                                 IWifiStateChangedActionHandler wifiStateChangedActionHandler) {
+                                 IWifiStateChangedActionListener wifiStateChangedActionHandler) {
         super(millisInFuture, countDownInterval);
         this.wifiStateChangedActionHandler = wifiStateChangedActionHandler;
     }
