@@ -28,6 +28,10 @@ public class CommandSender implements Runnable {
 
     OUTPUT
         > the reply received as a string
+
+    TODO: CommandSender should automatically spawn a new thread and the calling thread must be notified via callback
+    The usage should be as simple as CommandSender.send(command, device)
+    and the callback onCommandSent(String reply, device)
      */
 
     IOnCommandSentListener onCommandSentListener;

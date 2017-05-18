@@ -11,7 +11,7 @@ public class DeviceCommand {
     /*
     this won't scale very well if there are multiple types of devices having multiple commands
     also, set colour for LED may differ that from other light type
-    TODO: rewire the class, think of a better approach
+    TODO: rewire the class, think of a better approach, change the name to CommandGenerator
      */
 
     private static String SET_COLOUR_PREFIX = "#%";

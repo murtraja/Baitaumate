@@ -19,7 +19,7 @@ import com.smb.murtraja.baitaumate.OnFragmentInteractionListener.FragmentResultT
 public class WifiConnectFragment extends Fragment implements IWifiStateChangedActionListener {
 
     /*
-    this fragment simply connect to an Access Point
+    this fragment simply connects to an Access Point
     and displays the status accordingly in its view
 
     INPUT

@@ -8,6 +8,7 @@ public interface OnFragmentInteractionListener {
     public enum FragmentResultType {
         ROUTER_SELECTED,
         ROUTER_CONNECTED,
+        ROUTER_PASSWORD_SET,
         MULTIPLE_ACCESS_POINT_SELECTED,
         ACCESS_POINT_CONNECTED,
         ERROR

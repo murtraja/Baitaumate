@@ -56,6 +56,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         1. a call will be made to activity call back mListener with the list (l) of *required* ScanResults
         2. if mCheckable = false, then size(l) = 1
 
+    TODO: Make the buttons visible or disabled in case when there are no results and mCheckable is true
 
     ***OLD COMMENTS BELOW, REMOVED CLICKABLE BEHAVIOUR, NOW HANDLED BY MAIN ACTIVITY***
     > Scan the available WiFi networks
@@ -229,7 +230,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
             need an OnItemClickListener, whenever clicked, that value is sent to the parent activity
          */
         WifiResultsProcessor wifiResultsProcessor = new WifiResultsProcessor(results);
-        List<String> accessPoints = wifiResultsProcessor.computeUniqueAPsFromScanResults(false);
+        List<String> accessPoints = wifiResultsProcessor.computeUniqueAPsFromScanResults(mScanDevices);
         mStatusTextView.setText(String.format("Found %d Wifi networks", accessPoints.size()));
 
         if(mCheckable) {
