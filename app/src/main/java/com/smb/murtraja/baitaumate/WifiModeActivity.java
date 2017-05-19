@@ -55,21 +55,35 @@ public class WifiModeActivity extends Activity implements OnFragmentInteractionL
      */
 
     private WifiScanDisplayFragment mWifiScanDisplayFragment;
+    private AskPasswordFragment mAskPasswordFragment;
     private WifiConnectFragment mWifiConnectFragment;
     private FragmentManager mFragmentManager;
+
+    private List<String> mAccessPoints;
+    private Fragment currentlyAttachedFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_mode);
         mFragmentManager = getFragmentManager();
-        boolean scanDevices = true, checkable = true;
-        mWifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable, FragmentResultType.MULTIPLE_ACCESS_POINT_SELECTED);
-//        mWifiConnectFragment = WifiConnectFragment.newInstance("Celerio", "hadtochange", FragmentResultType.ACCESS_POINT_CONNECTED);
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.ll_wifi_mode, mWifiScanDisplayFragment);
-        fragmentTransaction.commit();
+
+
+        boolean scanDevices = false, checkable = false;
+        WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable, FragmentResultType.ROUTER_SELECTED);
+        setFragment(wifiScanDisplayFragment);
     }
+
+    private void setFragment(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        if(currentlyAttachedFragment != null) {
+            fragmentTransaction.remove(currentlyAttachedFragment);
+        }
+        fragmentTransaction.add(R.id.ll_wifi_mode, fragment);
+        fragmentTransaction.commit();
+        currentlyAttachedFragment = fragment;
+    }
+
 
     @Override
     public void onFragmentInteraction(FragmentResultType resultType, Object result) {
@@ -87,19 +101,34 @@ public class WifiModeActivity extends Activity implements OnFragmentInteractionL
     }
 
     private void onRouterSelected(String wifiNetworkName) {
+        Log.d(MainActivity.TAG, "received "+wifiNetworkName);
+        AskPasswordFragment askPasswordFragment = AskPasswordFragment.newInstance(FragmentResultType.ROUTER_PASSWORD_SET);
+        setFragment(askPasswordFragment);
 
     }
 
     private void onRouterPasswordSet(String password) {
-
+        Log.d(MainActivity.TAG, "received "+password);
+        WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(true, true, FragmentResultType.MULTIPLE_ACCESS_POINT_SELECTED);
+        setFragment(wifiScanDisplayFragment);
     }
 
     private void onMultipleAcessPointsSelected(List<String> accessPoints) {
         Log.d(MainActivity.TAG, "Got the following selected Access Points: " + accessPoints);
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.ll_wifi_mode, mWifiScanDisplayFragment);
-        fragmentTransaction.commit();
+        mAccessPoints = accessPoints;
+        connectToTheNextAccessPoint();
 
 
+
+    }
+
+    private void connectToTheNextAccessPoint() {
+        if(mAccessPoints.size() == 0) {
+            // now connect to the router and probe the network
+        } else {
+            String accessPoint = mAccessPoints.remove(0);
+            WifiConnectFragment wifiConnectFragment = WifiConnectFragment.newInstance(accessPoint, "", FragmentResultType.ACCESS_POINT_CONNECTED);
+            setFragment(wifiConnectFragment);
+        }
     }
 }
