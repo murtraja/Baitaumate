@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.smb.murtraja.baitaumate.OnFragmentInteractionListener.FragmentResultType;
+import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
 
 public class WifiConnectFragment extends Fragment implements IWifiStateChangedActionListener {
 
@@ -46,8 +46,8 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
     private String mAccessPointName;
     private String mPassword;
 
-    private FragmentResultType mResultType;
-    private OnFragmentInteractionListener mListener;
+    private InteractionResultType mResultType;
+    private OnInteractionListener mListener;
 
     private TextView mStatusTextView;
 
@@ -83,7 +83,7 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
         // Required empty public constructor
     }
 
-    public static WifiConnectFragment newInstance(String accessPoint, String password, FragmentResultType resultType) {
+    public static WifiConnectFragment newInstance(String accessPoint, String password, InteractionResultType resultType) {
         WifiConnectFragment fragment = new WifiConnectFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ACCESS_POINT, accessPoint);
@@ -99,7 +99,7 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
         if (getArguments() != null) {
             mAccessPointName = getArguments().getString(ARG_ACCESS_POINT);
             mPassword = getArguments().getString(ARG_PASSWORD);
-            mResultType = (FragmentResultType) getArguments().getSerializable(ARG_RESULT_TYPE);
+            mResultType = (InteractionResultType) getArguments().getSerializable(ARG_RESULT_TYPE);
         }
     }
 
@@ -122,11 +122,11 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
     }
 
     private void initAttach(Context context) {
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnInteractionListener) {
+            mListener = (OnInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnInteractionListener");
         }
     }
 
@@ -172,7 +172,7 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
     }
 
     public void sendResultToActivity() {
-        mListener.onFragmentInteraction(mResultType, mConnected);
+        mListener.onInteraction(mResultType, mConnected);
     }
 
     @Override

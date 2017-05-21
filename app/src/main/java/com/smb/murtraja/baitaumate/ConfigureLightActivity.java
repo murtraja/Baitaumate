@@ -1,12 +1,10 @@
 package com.smb.murtraja.baitaumate;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.danielnilsson9.colorpickerview.view.ColorPickerView;
 
@@ -33,8 +31,8 @@ public class ConfigureLightActivity extends Activity implements IOnCommandSentLi
             public void onClick(View v) {
                 mCommandStatusTextView.setText("Now sending command...");
                 int color = mColorPicker.getColor();
-                CommandSender commandSender = new CommandSender(color, mConfigureLightActivity);
-                Thread thread = new Thread(commandSender);
+                CommandSenderOld commandSenderOld = new CommandSenderOld(color, mConfigureLightActivity);
+                Thread thread = new Thread(commandSenderOld);
                 thread.start();
             }
         });

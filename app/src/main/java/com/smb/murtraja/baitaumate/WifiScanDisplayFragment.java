@@ -23,7 +23,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.smb.murtraja.baitaumate.OnFragmentInteractionListener.FragmentResultType;
+import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
 
 public class WifiScanDisplayFragment extends Fragment implements IWifiScanDisplayHandler {
 
@@ -84,8 +84,8 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     private boolean mScanDevices;
     private boolean mCheckable;
 
-    private OnFragmentInteractionListener mListener;
-    private FragmentResultType mResultType;
+    private OnInteractionListener mListener;
+    private InteractionResultType mResultType;
 
     private Button mScanAgainButton;
     private ListView mScanResultsListView;
@@ -103,7 +103,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 
 
 
-    public static WifiScanDisplayFragment newInstance(boolean scanDevices, boolean checkable, FragmentResultType resultType) {
+    public static WifiScanDisplayFragment newInstance(boolean scanDevices, boolean checkable, InteractionResultType resultType) {
         WifiScanDisplayFragment fragment = new WifiScanDisplayFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_SCAN_DEVICES, scanDevices);
@@ -119,7 +119,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
         if (getArguments() != null) {
             mScanDevices = getArguments().getBoolean(ARG_SCAN_DEVICES);
             mCheckable = getArguments().getBoolean(ARG_CHECKABLE);
-            mResultType = (FragmentResultType)getArguments().getSerializable(ARG_RESULT_TYPE);
+            mResultType = (InteractionResultType)getArguments().getSerializable(ARG_RESULT_TYPE);
         }
     }
 
@@ -193,11 +193,11 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     }
 
     private void onAttachInit(Context context) {
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnInteractionListener) {
+            mListener = (OnInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnInteractionListener");
         }
         Log.d(MainActivity.TAG, "inside on attach of fragment");
     }
@@ -295,6 +295,6 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     }
 
     private void sendResultToActivity() {
-        mListener.onFragmentInteraction(mResultType, mAccessPointsSelected);
+        mListener.onInteraction(mResultType, mAccessPointsSelected);
     }
 }

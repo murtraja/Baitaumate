@@ -2,7 +2,6 @@ package com.smb.murtraja.baitaumate;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -13,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.smb.murtraja.baitaumate.OnFragmentInteractionListener.FragmentResultType;
+import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
 
 public class AskPasswordFragment extends Fragment {
 
@@ -26,8 +25,8 @@ public class AskPasswordFragment extends Fragment {
 
     private static final String ARG_RESULT_TYPE = "RESULT_TYPE";
 
-    private FragmentResultType mResultType;
-    private OnFragmentInteractionListener mListener;
+    private InteractionResultType mResultType;
+    private OnInteractionListener mListener;
 
     private String mPassword;
 
@@ -39,7 +38,7 @@ public class AskPasswordFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static AskPasswordFragment newInstance(FragmentResultType resultType) {
+    public static AskPasswordFragment newInstance(InteractionResultType resultType) {
         AskPasswordFragment fragment = new AskPasswordFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_RESULT_TYPE, resultType);
@@ -51,7 +50,7 @@ public class AskPasswordFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mResultType = (FragmentResultType) getArguments().getSerializable(ARG_RESULT_TYPE);
+            mResultType = (InteractionResultType) getArguments().getSerializable(ARG_RESULT_TYPE);
         }
     }
 
@@ -89,11 +88,11 @@ public class AskPasswordFragment extends Fragment {
     }
 
     private void onAttachInit(Context context) {
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnInteractionListener) {
+            mListener = (OnInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnInteractionListener");
         }
         Log.d(MainActivity.TAG, "inside on attach of fragment");
     }
@@ -115,7 +114,7 @@ public class AskPasswordFragment extends Fragment {
     }
 
     private void sendResultToActivity() {
-        mListener.onFragmentInteraction(mResultType, mPassword);
+        mListener.onInteraction(mResultType, mPassword);
     }
 
     private boolean isPasswordInvalid(String password) {

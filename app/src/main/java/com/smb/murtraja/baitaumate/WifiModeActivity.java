@@ -9,7 +9,7 @@ import android.util.Log;
 
 import java.util.List;
 
-public class WifiModeActivity extends Activity implements OnFragmentInteractionListener {
+public class WifiModeActivity extends Activity implements OnInteractionListener {
 
     /*
     This Wifi Mode is responsible for the following
@@ -36,14 +36,13 @@ public class WifiModeActivity extends Activity implements OnFragmentInteractionL
             i. Use WifiScanDisplayFragment with scanDevices and checkable equal to true
         6.
             a.
-                i. Use WifiConnectFragment to connect to Di
             b.
-                i. Modify the CommandSender to do the job
+                i. Make a new fragment ConnectAndSendFragment ? to do the job
 
             i. The retrieved list must be stored in the activity as List or Queue call it DL
             ii. Whenever 5.i. returns a callback with a list of devices, start the WifiConnectFragment
             iii. remove an element from DL, connect to it
-            iv. Then on its callback start the CommandSender
+            iv. Then on its callback start the CommandSenderOld
             v. and on its callback go to iii if DL is not empty
         7.
             i. Use WifiConnectFragment
@@ -59,8 +58,9 @@ public class WifiModeActivity extends Activity implements OnFragmentInteractionL
     private WifiConnectFragment mWifiConnectFragment;
     private FragmentManager mFragmentManager;
 
+    private String mWifiNetworkName, mPassword;
     private List<String> mAccessPoints;
-    private Fragment currentlyAttachedFragment;
+    private Fragment mCurrentlyAttachedFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,65 +70,85 @@ public class WifiModeActivity extends Activity implements OnFragmentInteractionL
 
 
         boolean scanDevices = false, checkable = false;
-        WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable, FragmentResultType.ROUTER_SELECTED);
+        WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable, InteractionResultType.ROUTER_SELECTED);
         setFragment(wifiScanDisplayFragment);
     }
 
     private void setFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        if(currentlyAttachedFragment != null) {
-            fragmentTransaction.remove(currentlyAttachedFragment);
+        if(mCurrentlyAttachedFragment != null) {
+            fragmentTransaction.remove(mCurrentlyAttachedFragment);
         }
         fragmentTransaction.add(R.id.ll_wifi_mode, fragment);
         fragmentTransaction.commit();
-        currentlyAttachedFragment = fragment;
+        mCurrentlyAttachedFragment = fragment;
     }
 
 
     @Override
-    public void onFragmentInteraction(FragmentResultType resultType, Object result) {
-        if (resultType == FragmentResultType.ROUTER_SELECTED) {
+    public void onInteraction(InteractionResultType resultType, Object result) {
+        if (resultType == InteractionResultType.ROUTER_SELECTED) {
             onRouterSelected(((List<String>) result).get(0));
         }
 
-        else if (resultType == FragmentResultType.ROUTER_PASSWORD_SET) {
+        else if (resultType == InteractionResultType.ROUTER_PASSWORD_SET) {
             onRouterPasswordSet((String) result);
         }
 
-        else if (resultType == FragmentResultType.MULTIPLE_ACCESS_POINT_SELECTED) {
-            onMultipleAcessPointsSelected((List<String>) result);
+        else if (resultType == InteractionResultType.MULTIPLE_ACCESS_POINT_SELECTED) {
+            onMultipleAccessPointsSelected((List<String>) result);
+        }
+
+        else if(resultType == InteractionResultType.COMMAND_SENT) {
+            onCommandSent((String) result);
+        }
+
+        else if(resultType == InteractionResultType.ROUTER_CONNECTED) {
+            onRouterConnected((boolean) result);
+        }
+    }
+
+    private void onRouterConnected(boolean connected) {
+        if(connected) {
+            // TODO: now probe the network to find the devices
         }
     }
 
     private void onRouterSelected(String wifiNetworkName) {
         Log.d(MainActivity.TAG, "received "+wifiNetworkName);
-        AskPasswordFragment askPasswordFragment = AskPasswordFragment.newInstance(FragmentResultType.ROUTER_PASSWORD_SET);
+        mWifiNetworkName = wifiNetworkName;
+        AskPasswordFragment askPasswordFragment = AskPasswordFragment.newInstance(InteractionResultType.ROUTER_PASSWORD_SET);
         setFragment(askPasswordFragment);
 
     }
 
     private void onRouterPasswordSet(String password) {
         Log.d(MainActivity.TAG, "received "+password);
-        WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(true, true, FragmentResultType.MULTIPLE_ACCESS_POINT_SELECTED);
+        mPassword = password;
+        WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(true, true, InteractionResultType.MULTIPLE_ACCESS_POINT_SELECTED);
         setFragment(wifiScanDisplayFragment);
     }
 
-    private void onMultipleAcessPointsSelected(List<String> accessPoints) {
+    private void onMultipleAccessPointsSelected(List<String> accessPoints) {
         Log.d(MainActivity.TAG, "Got the following selected Access Points: " + accessPoints);
         mAccessPoints = accessPoints;
         connectToTheNextAccessPoint();
-
-
-
+    }
+    private void onCommandSent(String reply) {
+        Log.d(MainActivity.TAG, "Got this reply from device: "+reply);
+        connectToTheNextAccessPoint();
     }
 
     private void connectToTheNextAccessPoint() {
         if(mAccessPoints.size() == 0) {
-            // now connect to the router and probe the network
+            // now connect to the router
+            WifiConnectFragment connectFragment = WifiConnectFragment.newInstance(mWifiNetworkName, mPassword, InteractionResultType.ROUTER_CONNECTED);
+            setFragment(connectFragment);
         } else {
             String accessPoint = mAccessPoints.remove(0);
-            WifiConnectFragment wifiConnectFragment = WifiConnectFragment.newInstance(accessPoint, "", FragmentResultType.ACCESS_POINT_CONNECTED);
-            setFragment(wifiConnectFragment);
+            String setRouterCommand = CommandGenerator.generateSetRouterCommand(mWifiNetworkName, mPassword);
+            ConnectAndSendFragment csFragment = ConnectAndSendFragment.newInstance(accessPoint, setRouterCommand, InteractionResultType.COMMAND_SENT);
+            setFragment(csFragment);
         }
     }
 }

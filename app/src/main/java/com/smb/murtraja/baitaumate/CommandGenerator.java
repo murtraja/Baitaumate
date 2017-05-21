@@ -6,12 +6,12 @@ import android.graphics.Color;
  * Created by murtraja on 7/5/17.
  */
 
-public class DeviceCommand {
+public class CommandGenerator {
 
     /*
     this won't scale very well if there are multiple types of devices having multiple commands
     also, set colour for LED may differ that from other light type
-    TODO: rewire the class, think of a better approach, change the name to CommandGenerator
+    TODO: rewire the class, think of a better approach
      */
 
     private static String SET_COLOUR_PREFIX = "#%";
