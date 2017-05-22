@@ -1,5 +1,7 @@
 package com.smb.murtraja.baitaumate;
 
+import android.util.Log;
+
 /**
  * Created by murtraja on 21/5/17.
  */
@@ -24,6 +26,7 @@ public class CommandSender implements OnInteractionListener {
     }
 
     public void send(String command) {
+        Log.d(MainActivity.TAG, "CommandSender: now sending >> "+command);
         senderThread = new CommandSenderThread(mDeviceIP, command, InteractionResultType.COMMAND_SENT, this);
         senderThread.start();
     }

@@ -4,16 +4,23 @@
     android:layout_height="match_parent"
     tools:context="com.smb.murtraja.baitaumate.ConnectAndSendFragment">
 
-    <TextView
-        android:id="@+id/tv_connect_and_send_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Connecting and sending the command..." />
-
     <LinearLayout
-        android:id="@+id/ll_connect_and_send"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"></LinearLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_connect_and_send_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Connecting and sending the command..." />
+
+        <LinearLayout
+            android:id="@+id/ll_connect_and_send"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"></LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

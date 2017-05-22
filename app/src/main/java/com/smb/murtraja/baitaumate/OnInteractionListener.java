@@ -13,6 +13,7 @@ public interface OnInteractionListener {
         ACCESS_POINT_CONNECTED,
 
         COMMAND_SENT,
+        DEBUG,
         ERROR
     }
     void onInteraction(InteractionResultType resultType, Object result);

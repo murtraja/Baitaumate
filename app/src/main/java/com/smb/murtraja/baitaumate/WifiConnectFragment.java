@@ -53,7 +53,7 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
 
     private boolean mConnected = false;
     private WifiManager mWifiManager;
-    private CountDownTimer mTimer = new CountDownTimer(1000, 500) {
+    private CountDownTimer mTimer = new CountDownTimer(5000, 500) {
         @Override
         public void onTick(long millisUntilFinished) {
             mStatusTextView.setText(mStatusTextView.getText()+".");
@@ -123,7 +123,11 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
 
     private void initAttach(Context context) {
         if (context instanceof OnInteractionListener) {
-            mListener = (OnInteractionListener) context;
+            Fragment parentFragment = getParentFragment();
+            if(parentFragment == null)
+                mListener = (OnInteractionListener) context;
+            else
+                mListener = (OnInteractionListener) parentFragment;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnInteractionListener");
@@ -172,6 +176,7 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
     }
 
     public void sendResultToActivity() {
+        Log.d(MainActivity.TAG, "WCFrag: sending result to activity "+mConnected);
         mListener.onInteraction(mResultType, mConnected);
     }
 

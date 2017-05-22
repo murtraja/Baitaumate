@@ -128,9 +128,12 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
 
     @Override
     public void onInteraction(InteractionResultType resultType, Object result) {
+
         if(resultType == InteractionResultType.ACCESS_POINT_CONNECTED) {
             onAccessPointConnected((boolean) result);
-        } else if(resultType == InteractionResultType.COMMAND_SENT) {
+        }
+
+        else if(resultType == InteractionResultType.COMMAND_SENT) {
             onCommandSent((String) result);
         }
     }
@@ -138,6 +141,7 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
     private void onAccessPointConnected(boolean successful) {
         if(successful) {
             // now send command to the device
+            Log.d(MainActivity.TAG, "CSFrag: successfully connected to "+mAPName);
             String deviceIP = determineCurrentlyConnectedDeviceIP();
             CommandSender commandSender = new CommandSender(deviceIP, InteractionResultType.COMMAND_SENT, this);
             commandSender.send(mCommand);
@@ -154,7 +158,7 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
 
     private String determineCurrentlyConnectedDeviceIP() {
         // TODO: use some DHCP service to figure out the gateway IP instead of hardcoding
-        return "192.168.4.1";
+        return "192.168.43.1";
 
     }
 }

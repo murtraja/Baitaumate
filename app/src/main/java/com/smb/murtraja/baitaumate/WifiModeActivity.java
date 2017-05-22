@@ -72,6 +72,13 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         boolean scanDevices = false, checkable = false;
         WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable, InteractionResultType.ROUTER_SELECTED);
         setFragment(wifiScanDisplayFragment);
+
+
+        /*
+        // for debugging purposes:
+        ConnectAndSendFragment fragment = ConnectAndSendFragment.newInstance("5C:CF:7F:C3:74:A6", "bye\n", InteractionResultType.DEBUG);
+        setFragment(fragment);
+        */
     }
 
     private void setFragment(Fragment fragment) {
@@ -106,6 +113,10 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         else if(resultType == InteractionResultType.ROUTER_CONNECTED) {
             onRouterConnected((boolean) result);
         }
+
+        else if(resultType == InteractionResultType.DEBUG) {
+            onDebug(result);
+        }
     }
 
     private void onRouterConnected(boolean connected) {
@@ -134,9 +145,13 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         mAccessPoints = accessPoints;
         connectToTheNextAccessPoint();
     }
+
     private void onCommandSent(String reply) {
         Log.d(MainActivity.TAG, "Got this reply from device: "+reply);
         connectToTheNextAccessPoint();
+    }
+    private void onDebug(Object result) {
+        Log.d(MainActivity.TAG, "WifiModeActivity: returned from CS frag with "+result);
     }
 
     private void connectToTheNextAccessPoint() {
