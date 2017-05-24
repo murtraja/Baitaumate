@@ -13,6 +13,10 @@ public interface OnInteractionListener {
         ACCESS_POINT_CONNECTED,
 
         COMMAND_SENT,
+
+        WIFI_SCAN_RESULTS_AVAILABLE,
+        WIFI_STATE_CHANGED_ACTION,
+
         DEBUG,
         ERROR
     }

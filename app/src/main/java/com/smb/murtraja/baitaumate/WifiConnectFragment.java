@@ -14,9 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
-
-public class WifiConnectFragment extends Fragment implements IWifiStateChangedActionListener {
+public class WifiConnectFragment extends Fragment implements OnInteractionListener {
 
     /*
     this fragment simply connects to an Access Point
@@ -147,30 +145,31 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
 
         mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         mTimer.start();
-        connectToAccessPoint(mAccessPointName, mPassword);
+        connectToAccessPoint();
     }
 
-    private void connectToAccessPoint(String ssid, String password) {
-        ssid = String.format("\"%s\"", ssid);
+    private void connectToAccessPoint() {
+        mAccessPointName = String.format("\"%s\"", mAccessPointName);
         WifiConfiguration wifiConfiguration = new WifiConfiguration();
-        wifiConfiguration.SSID = ssid;
-        if(password == null || "".equals(password)) {
+        wifiConfiguration.SSID = mAccessPointName;
+        if(mPassword == null || "".equals(mPassword)) {
             wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         } else {
-            wifiConfiguration.preSharedKey = String.format("\"%s\"", password);
+            wifiConfiguration.preSharedKey = String.format("\"%s\"", mPassword);
         }
 
         int netId = mWifiManager.addNetwork(wifiConfiguration);
         boolean enableSuccess = mWifiManager.enableNetwork(netId, true);
         if(enableSuccess) {
-            Log.d(MainActivity.TAG, "Now enabling network "+ssid);
+            Log.d(MainActivity.TAG, "Now enabling network "+mAccessPointName);
         } else {
-            throw new RuntimeException("Could not connect to "+ssid);
+            throw new RuntimeException("Could not connect to "+mAccessPointName);
         }
 
         IntentFilter stateChangedIntent = new IntentFilter(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         //stateChangedIntent.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        mReceiverForWifiStateChangedAction = new ReceiverForWifiStateChangedAction(ssid, mWifiManager, this);
+        mReceiverForWifiStateChangedAction = new ReceiverForWifiStateChangedAction(
+                mAccessPointName, mWifiManager, InteractionResultType.WIFI_STATE_CHANGED_ACTION, this);
         Context context = getActivity().getApplicationContext();
         context.registerReceiver(mReceiverForWifiStateChangedAction, stateChangedIntent);
     }
@@ -181,15 +180,20 @@ public class WifiConnectFragment extends Fragment implements IWifiStateChangedAc
     }
 
     @Override
-    public void handleWifiStateChangedAction(String accessPointName, boolean successful) {
+    public void onInteraction(InteractionResultType resultType, Object result) {
+        if(resultType == InteractionResultType.WIFI_STATE_CHANGED_ACTION) {
+            onWifiStateChangedAction((boolean) result);
+        }
+    }
+
+    public void onWifiStateChangedAction(boolean successful) {
         mTimer.cancel();
         mConnected = successful;
         if(mConnected) {
-            mStatusTextView.setText("Successfully connected to "+accessPointName);
+            mStatusTextView.setText("Successfully connected to "+mAccessPointName);
         } else {
-            mStatusTextView.setText("Could not connect to "+accessPointName);
+            mStatusTextView.setText("Could not connect to "+mAccessPointName);
         }
         sendResultToActivity();
     }
-
 }

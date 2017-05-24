@@ -1,5 +1,7 @@
 package com.smb.murtraja.baitaumate;
 
+import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,11 +18,13 @@ import java.util.List;
 public class WifiScanReceiver extends BroadcastReceiver {
 
     WifiManager mWifiManager;
-    IWifiScanDisplayHandler mHandler;
+    InteractionResultType mResultType;
+    OnInteractionListener mListener;
 
-    public WifiScanReceiver(WifiManager wifiManager, IWifiScanDisplayHandler handler) {
+    public WifiScanReceiver(WifiManager wifiManager, InteractionResultType resultType, OnInteractionListener listener) {
         mWifiManager = wifiManager;
-        mHandler = handler;
+        mResultType = resultType;
+        mListener = listener;
     }
 
     @Override
@@ -32,6 +36,6 @@ public class WifiScanReceiver extends BroadcastReceiver {
             Log.d("MMR", result.SSID);
         }
         context.unregisterReceiver(this);
-        mHandler.onWifiScanResultsAvailable(results);
+        mListener.onInteraction(mResultType, results);
     }
 }

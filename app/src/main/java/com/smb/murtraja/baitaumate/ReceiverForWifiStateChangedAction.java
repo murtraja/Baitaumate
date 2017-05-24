@@ -1,5 +1,7 @@
 package com.smb.murtraja.baitaumate;
 
+import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,12 +22,17 @@ public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
 
     String mAccessPointName;
     WifiManager mWifiManager;
-    IWifiStateChangedActionListener mListener;
 
-    public ReceiverForWifiStateChangedAction(String accessPointName, WifiManager wifiManager, IWifiStateChangedActionListener listener) {
+    InteractionResultType mResultType;
+    OnInteractionListener mListener;
+
+    public ReceiverForWifiStateChangedAction(String accessPointName, WifiManager wifiManager,
+                                             InteractionResultType resultType, OnInteractionListener listener) {
         mAccessPointName = accessPointName;
-        mListener = listener;
         mWifiManager = wifiManager;
+
+        mResultType = resultType;
+        mListener = listener;
     }
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -42,7 +49,7 @@ public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
     }
     public void sendResultBack(Context context, boolean successful) {
         context.unregisterReceiver(this);
-        mListener.handleWifiStateChangedAction(mAccessPointName, successful);
+        mListener.onInteraction(mResultType, successful);
     }
     public boolean checkIfConnected(SupplicantState supplicantState) {
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
@@ -109,7 +116,7 @@ public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
         int supl_error=intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -1);
         if(supl_error==WifiManager.ERROR_AUTHENTICATING){
             Log.i("ERROR_AUTHENTICATING", "ERROR_AUTHENTICATING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            supplicantState = null; //necessary to detect this error
+            supplicantState = null; //necessary, to detect this error
         }
         return supplicantState;
     }

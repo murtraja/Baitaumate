@@ -25,7 +25,7 @@ import java.util.List;
 
 import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
 
-public class WifiScanDisplayFragment extends Fragment implements IWifiScanDisplayHandler {
+public class WifiScanDisplayFragment extends Fragment implements OnInteractionListener {
 
     /*
     As the name suggests, I want this fragment to not only scan the
@@ -210,7 +210,7 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
 
     private void startWifiScan() {
         mScanAgainButton.setEnabled(false);
-        BroadcastReceiver wifiScanReceiver = new WifiScanReceiver(wifiManager, this);
+        BroadcastReceiver wifiScanReceiver = new WifiScanReceiver(wifiManager, InteractionResultType.WIFI_SCAN_RESULTS_AVAILABLE, this);
         IntentFilter intentFilter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         getActivity().registerReceiver(wifiScanReceiver, intentFilter);
         wifiManager.startScan();
@@ -218,6 +218,12 @@ public class WifiScanDisplayFragment extends Fragment implements IWifiScanDispla
     }
 
     @Override
+    public void onInteraction(InteractionResultType resultType, Object result) {
+        if(resultType == InteractionResultType.WIFI_SCAN_RESULTS_AVAILABLE) {
+            onWifiScanResultsAvailable((List<ScanResult>)result);
+        }
+    }
+
     public void onWifiScanResultsAvailable(List<ScanResult> results) {
         /*
         Now we have got the ScanResults, need to display them.
