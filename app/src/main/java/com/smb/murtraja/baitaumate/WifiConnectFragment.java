@@ -64,7 +64,7 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
             sendResultToActivity();
         }
     };
-    private ReceiverForWifiStateChangedAction mReceiverForWifiStateChangedAction;
+    private WifiStateChangedActionReceiver mWifiStateChangedActionReceiver;
 
     private void unregisterReceiver() {
 
@@ -73,7 +73,7 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
          */
 
         Context context = getActivity().getApplicationContext();
-        context.unregisterReceiver(mReceiverForWifiStateChangedAction);
+        context.unregisterReceiver(mWifiStateChangedActionReceiver);
     }
 
 
@@ -168,10 +168,10 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
 
         IntentFilter stateChangedIntent = new IntentFilter(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         //stateChangedIntent.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        mReceiverForWifiStateChangedAction = new ReceiverForWifiStateChangedAction(
+        mWifiStateChangedActionReceiver = new WifiStateChangedActionReceiver(
                 mAccessPointName, mWifiManager, InteractionResultType.WIFI_STATE_CHANGED_ACTION, this);
         Context context = getActivity().getApplicationContext();
-        context.registerReceiver(mReceiverForWifiStateChangedAction, stateChangedIntent);
+        context.registerReceiver(mWifiStateChangedActionReceiver, stateChangedIntent);
     }
 
     public void sendResultToActivity() {

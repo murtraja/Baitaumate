@@ -53,14 +53,11 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
 
      */
 
-    private WifiScanDisplayFragment mWifiScanDisplayFragment;
-    private AskPasswordFragment mAskPasswordFragment;
-    private WifiConnectFragment mWifiConnectFragment;
     private FragmentManager mFragmentManager;
+    private Fragment mCurrentlyAttachedFragment;
 
     private String mWifiNetworkName, mPassword;
     private List<String> mAccessPoints;
-    private Fragment mCurrentlyAttachedFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +67,8 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
 
 
         boolean scanDevices = false, checkable = false;
-        WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(scanDevices, checkable, InteractionResultType.ROUTER_SELECTED);
+        WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(
+                scanDevices, checkable, InteractionResultType.ROUTER_SELECTED);
         setFragment(wifiScanDisplayFragment);
 
 

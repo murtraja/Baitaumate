@@ -14,7 +14,7 @@ import android.util.Log;
  * Created by murtraja on 29/4/17.
  */
 
-public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
+public class WifiStateChangedActionReceiver extends BroadcastReceiver {
 
     /*
     Error handling functionality needs to be added here
@@ -26,8 +26,8 @@ public class ReceiverForWifiStateChangedAction extends BroadcastReceiver {
     InteractionResultType mResultType;
     OnInteractionListener mListener;
 
-    public ReceiverForWifiStateChangedAction(String accessPointName, WifiManager wifiManager,
-                                             InteractionResultType resultType, OnInteractionListener listener) {
+    public WifiStateChangedActionReceiver(String accessPointName, WifiManager wifiManager,
+                                          InteractionResultType resultType, OnInteractionListener listener) {
         mAccessPointName = accessPointName;
         mWifiManager = wifiManager;
 

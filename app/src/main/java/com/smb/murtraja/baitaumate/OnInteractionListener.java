@@ -17,6 +17,8 @@ public interface OnInteractionListener {
         WIFI_SCAN_RESULTS_AVAILABLE,
         WIFI_STATE_CHANGED_ACTION,
 
+        DEVICE_CONFIG_DONE,
+
         DEBUG,
         ERROR
     }

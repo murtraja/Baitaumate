@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-public class MainActivity extends Activity implements IScanResultsAvailableActionHandler, IWifiStateChangedActionListener {
+public class MainActivity extends Activity {
 
     static String TAG = "MMR";
     private WifiManager wifiManager;
@@ -50,12 +50,6 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
         scanAgain.setEnabled(false);
         final IntentFilter scanResultsIntent = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
 
-        ReceiverForScanResultsAvailableAction receiverForScanResultsAvailableAction =
-                new ReceiverForScanResultsAvailableAction(wifiManager, this);
-
-        this.registerReceiver(receiverForScanResultsAvailableAction, scanResultsIntent);
-        wifiManager.startScan();
-        textView.setText("Searching for Wifi networks...");
     }
     private void connectToAccessPoint(String ssid) {
         ssid = String.format("\"%s\"", ssid);
@@ -68,10 +62,7 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
 
         IntentFilter stateChangedIntent = new IntentFilter(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         //stateChangedIntent.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        ReceiverForWifiStateChangedAction receiverForWifiStateChangedAction =
-                new ReceiverForWifiStateChangedAction(ssid, wifiManager, this);
-        Context context = getApplicationContext();
-        context.registerReceiver(receiverForWifiStateChangedAction, stateChangedIntent);
+
 
 
     }
@@ -89,35 +80,6 @@ public class MainActivity extends Activity implements IScanResultsAvailableActio
 
     }
 
-    @Override
-    public void handleScanResultsAvailableAction(List<ScanResult> results) {
-        TextView textView = (TextView)findViewById(R.id.tv_status);
-        ListView listView = (ListView)findViewById(R.id.lv_scanResults);
-        WifiResultsProcessor wifiResultsProcessor = new WifiResultsProcessor(results);
-        List<String> accessPoints = wifiResultsProcessor.computeUniqueAPsFromScanResults(true);
-        textView.setText(String.format("Found %d Wifi networks", accessPoints.size()));
-        ListAdapter listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, accessPoints);
-        listView.setAdapter(listAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String ssid = ((TextView)view).getText().toString();
-//                Toast.makeText(MainActivity.this, ""+mAccessPointName, Toast.LENGTH_SHORT).show();
-                connectToAccessPoint(ssid);
-            }
-        });
-        scanAgain.setEnabled(true);
-    }
-
-    @Override
-    public void handleWifiStateChangedAction(String accessPointName, boolean successful) {
-        if(successful) {
-            Toast.makeText(this, "Successfully connected", Toast.LENGTH_SHORT).show();
-            //now make a new activity here!
-            Intent intent = new Intent(this, ConfigureLightActivity.class);
-            this.startActivity(intent);
-        }
-    }
 }
 
 /*
