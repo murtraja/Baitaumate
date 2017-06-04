@@ -20,17 +20,23 @@ public class CommandGenerator {
     private static String SET_ROUTER_PREFIX = "$";
     private static String SET_ROUTER_DELIMITER = ":";
 
+    private static String COMMAND_SUFFIX = "\n";
+
 
     public static String generateSetColourCommand(int colour) {
         int r = Color.red(colour);
         int g = Color.green(colour);
         int b = Color.blue(colour);
         String command = String.format("%s%03d%s%03d%s%03d", SET_COLOUR_PREFIX, g, SET_COLOUR_DELIMITER, r, SET_COLOUR_DELIMITER, b);
-        return command;
+        return addSuffixToCommand(command);
     }
 
     public static String generateSetRouterCommand(String accessPointName, String accessPointPassword) {
         String command = String.format("%s%s%s%s", SET_ROUTER_PREFIX, accessPointName, SET_ROUTER_DELIMITER, accessPointPassword);
-        return command;
+        return addSuffixToCommand(command);
+    }
+
+    private static String addSuffixToCommand(String command) {
+        return command + COMMAND_SUFFIX;
     }
 }

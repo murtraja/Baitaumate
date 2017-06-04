@@ -3,6 +3,8 @@ package com.smb.murtraja.baitaumate;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -51,10 +53,12 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
 
     private boolean mConnected = false;
     private WifiManager mWifiManager;
-    private CountDownTimer mTimer = new CountDownTimer(5000, 500) {
+    private NetworkInfo mNetworkInfo;
+
+    private CountDownTimer mTimer = new CountDownTimer(10000, 500) {
         @Override
         public void onTick(long millisUntilFinished) {
-            mStatusTextView.setText(mStatusTextView.getText()+".");
+            updateStatusTextView();
         }
 
         @Override
@@ -71,7 +75,6 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         /*
         this function is useful when timer times out
          */
-
         Context context = getActivity().getApplicationContext();
         context.unregisterReceiver(mWifiStateChangedActionReceiver);
     }
@@ -144,6 +147,10 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         mStatusTextView.setText("Now connecting to "+ mAccessPointName);
 
         mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        mNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
         mTimer.start();
         connectToAccessPoint();
     }
@@ -166,10 +173,11 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
             throw new RuntimeException("Could not connect to "+mAccessPointName);
         }
 
-        IntentFilter stateChangedIntent = new IntentFilter(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+        IntentFilter stateChangedIntent = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         //stateChangedIntent.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        //stateChangedIntent.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         mWifiStateChangedActionReceiver = new WifiStateChangedActionReceiver(
-                mAccessPointName, mWifiManager, InteractionResultType.WIFI_STATE_CHANGED_ACTION, this);
+                mAccessPointName, mWifiManager, mNetworkInfo, InteractionResultType.WIFI_STATE_CHANGED_ACTION, this);
         Context context = getActivity().getApplicationContext();
         context.registerReceiver(mWifiStateChangedActionReceiver, stateChangedIntent);
     }
@@ -195,5 +203,13 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
             mStatusTextView.setText("Could not connect to "+mAccessPointName);
         }
         sendResultToActivity();
+    }
+    void updateStatusTextView() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mStatusTextView.setText(mStatusTextView.getText()+".");
+            }
+        });
     }
 }

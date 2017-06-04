@@ -33,6 +33,7 @@ public class CommandSender implements OnInteractionListener {
 
     @Override
     public void onInteraction(InteractionResultType resultType, Object result) {
+        // TODO: this method is invoked from a different thread, device a mechanism to convert it into current thread
         if(resultType == InteractionResultType.COMMAND_SENT) {
             onCommandSent((String) result);
         }

@@ -152,8 +152,13 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
         }
     }
 
-    private void onCommandSent(String reply) {
-        mListener.onInteraction(mResultType, reply);
+    private void onCommandSent(final String reply) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mListener.onInteraction(mResultType, reply);
+            }
+        });
     }
 
     private String determineCurrentlyConnectedDeviceIP() {
