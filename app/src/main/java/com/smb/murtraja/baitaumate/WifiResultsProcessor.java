@@ -24,7 +24,7 @@ public class WifiResultsProcessor {
      */
 
     private String octetRegex = "([A-Fa-f0-9]{2})";
-    private String deviceRegex = String.format("^%s(:%s){5}$", octetRegex, octetRegex);
+    private String deviceRegex = String.format("^%s(:%s){5}$", "([A-Fa-f0-9]{2,3})", octetRegex);
     private HashMap<String, ScanResult>  mAccessPointMap = new HashMap<>();
     private List<ScanResult> mResults;
     private List<String> mUniqueAPs = new ArrayList<>();

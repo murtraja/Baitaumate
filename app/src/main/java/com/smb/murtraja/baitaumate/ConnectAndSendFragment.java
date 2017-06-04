@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -163,7 +166,22 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
 
     private String determineCurrentlyConnectedDeviceIP() {
         // TODO: use some DHCP service to figure out the gateway IP instead of hardcoding
-        return "192.168.43.1";
+        WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        DhcpInfo dhcpInfo = wifiManager.getDhcpInfo();
+        String convertedAddress = getIPFromInt(dhcpInfo.serverAddress);
+        Log.d("DHCP", "device address: "+convertedAddress);
+        return convertedAddress;
 
+    }
+
+    private String getIPFromInt(int ip) {
+        // https://stackoverflow.com/a/16642424/4014182
+        String ipStr =
+                String.format("%d.%d.%d.%d",
+                        (ip & 0xff),
+                        (ip >> 8 & 0xff),
+                        (ip >> 16 & 0xff),
+                        (ip >> 24 & 0xff));
+        return ipStr;
     }
 }

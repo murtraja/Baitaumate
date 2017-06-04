@@ -45,18 +45,20 @@ public class WifiStateChangedActionReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         String methodName = "networkInfoIsConnected";
         if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-            Log.d(TAG(methodName), "network state changed");
             NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-            Log.d(TAG(methodName, "network info"), info+"|"+info.isConnected());
-            return info.isConnected();
+            if(info.isConnected()) {
+                String extra = info.getExtraInfo();
+                Log.d(TAG(methodName), "extra is "+extra);
+                if(extra.equals(mAccessPointName)) return true;
+            }
         }
         return false;
     }
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        //SupplicantState supplicantState = logAndGetCurrentState(intent);
-        boolean isConnected = networkInfoIsConnected(intent);//checkIfConnected(supplicantState, intent);
+        boolean isConnected = networkInfoIsConnected(intent);
         if(isConnected) {
             sendResultBack(context, true);
             return;
