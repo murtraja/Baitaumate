@@ -7,6 +7,9 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class WifiModeActivity extends Activity implements OnInteractionListener {
@@ -53,6 +56,8 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
 
      */
 
+    private static String TAG = "WifiModeActivity";
+
     private FragmentManager mFragmentManager;
     private Fragment mCurrentlyAttachedFragment;
 
@@ -65,18 +70,20 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         setContentView(R.layout.activity_wifi_mode);
         mFragmentManager = getFragmentManager();
 
-
+        /*
         boolean scanDevices = false, checkable = false;
         WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(
                 scanDevices, checkable, InteractionResultType.ROUTER_SELECTED);
         setFragment(wifiScanDisplayFragment);
-
-
-        /*
-        // for debugging purposes:
-        ConnectAndSendFragment fragment = ConnectAndSendFragment.newInstance("5C:CF:7F:C3:74:A6", "bye\n", InteractionResultType.DEBUG);
-        setFragment(fragment);
         */
+
+        //*
+        // for debugging purposes:
+        String arrayOfDeviceMAC[] = {"5e:cf:7f:c3:71:0c", "5e:cf:7f:c4:43:e5", "5e:cf:7f:c3:cc:22", "5e:cf:7f:c3:74:a6", "18:26:66:6f:b8:6f" };
+        ArrayList<String> hardwareAddressList = new ArrayList<>(Arrays.asList(arrayOfDeviceMAC));
+        ProbeNetworkFragment fragment = ProbeNetworkFragment.newInstance(hardwareAddressList, InteractionResultType.DEBUG);
+        setFragment(fragment);
+        //*/
     }
 
     private void setFragment(Fragment fragment) {
@@ -113,8 +120,13 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         }
 
         else if(resultType == InteractionResultType.DEBUG) {
-            onDebug(result);
+            onDebugNetworkProber(result);
         }
+    }
+
+    private void onDebugNetworkProber(Object result) {
+        HashMap<String, String> mapping = (HashMap<String, String>) result;
+        Log.d(TAG, "network prober returned to wifi mode activity" + mapping);
     }
 
     private void onRouterConnected(boolean connected) {

@@ -53,7 +53,6 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
 
     private boolean mConnected = false;
     private WifiManager mWifiManager;
-    private NetworkInfo mNetworkInfo;
 
     private CountDownTimer mTimer = new CountDownTimer(10000, 500) {
         @Override
@@ -147,9 +146,6 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         mStatusTextView.setText("Now connecting to "+ mAccessPointName);
 
         mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        mNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         mTimer.start();
         connectToAccessPoint();
@@ -174,10 +170,8 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         }
 
         IntentFilter stateChangedIntent = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        //stateChangedIntent.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        //stateChangedIntent.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         mWifiStateChangedActionReceiver = new WifiStateChangedActionReceiver(
-                mAccessPointName, mWifiManager, mNetworkInfo, InteractionResultType.WIFI_STATE_CHANGED_ACTION, this);
+                mAccessPointName, mWifiManager, InteractionResultType.WIFI_STATE_CHANGED_ACTION, this);
         Context context = getActivity().getApplicationContext();
         context.registerReceiver(mWifiStateChangedActionReceiver, stateChangedIntent);
     }
