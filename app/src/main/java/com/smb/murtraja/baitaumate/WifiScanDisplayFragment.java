@@ -237,7 +237,10 @@ public class WifiScanDisplayFragment extends Fragment implements OnInteractionLi
          */
         WifiResultsProcessor wifiResultsProcessor = new WifiResultsProcessor(results);
         List<String> accessPoints = wifiResultsProcessor.computeUniqueAPsFromScanResults(mScanDevices);
-        mStatusTextView.setText(String.format("Found %d Wifi networks", accessPoints.size()));
+        String statusText = "Found "+accessPoints.size()+" ";
+        if(mScanDevices)    statusText += "devices";
+        else                statusText += "Wifi networks";
+        mStatusTextView.setText(statusText);
 
         if(mCheckable) {
             updateUIWithCheckableAccessPoints(accessPoints);

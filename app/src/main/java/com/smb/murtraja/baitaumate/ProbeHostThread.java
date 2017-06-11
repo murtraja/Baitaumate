@@ -20,7 +20,7 @@ public class ProbeHostThread extends Thread {
     static String TAG = "ProbeHostThread";
     private final static String MAC_RE = "^%s\\s+0x1\\s+0x2\\s+([:0-9a-fA-F]+)\\s+\\*\\s+\\w+$";
     private final static int BUF = 8 * 1024;
-    int TIMEOUT = 2000;
+    int TIMEOUT = 1000;
 
     String mHostAddress;
     String mHardwareAddress;

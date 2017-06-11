@@ -19,6 +19,7 @@ public interface OnInteractionListener {
 
         HOST_PROBED,
         SUBNET_PROBED,
+        PROBE_FINISHED,
 
         DEVICE_CONFIG_DONE,
 

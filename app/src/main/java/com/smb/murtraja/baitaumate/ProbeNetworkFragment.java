@@ -1,18 +1,16 @@
 package com.smb.murtraja.baitaumate;
 
-import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
-
 import android.app.Activity;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -54,6 +52,8 @@ public class ProbeNetworkFragment extends Fragment implements OnInteractionListe
     private InteractionResultType mResultType;
 
     private TextView mStatusTextView;
+    private Button mProbeNetworkButton;
+    private Button mProbeNetworkDoneButton;
 
     private Activity mParentActivity;
 
@@ -123,10 +123,36 @@ public class ProbeNetworkFragment extends Fragment implements OnInteractionListe
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mStatusTextView = (TextView) view.findViewById(R.id.tv_probe_status);
+        mProbeNetworkButton = (Button) view.findViewById(R.id.btn_probe_network);
+        mProbeNetworkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startProbeSubnetThread();
+            }
+        });
+        mProbeNetworkDoneButton = (Button) view.findViewById(R.id.btn_probe_network_done);
+        mProbeNetworkDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendResultToActivity();
+            }
+        });
         startProbeSubnetThread();
     }
 
+    void updateButton(final String updateText, final boolean enabled) {
+        mParentActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProbeNetworkButton.setEnabled(enabled);
+                mProbeNetworkButton.setText(updateText);
+            }
+        });
+    }
+
     private void startProbeSubnetThread() {
+        updateButton("Probing...", false);
+        updateStatus("Probing started", true);
         String subnet = determineCurrentSubnet();
         Log.d(TAG, "current subnet: "+subnet);
         mProbeSubnetThread = new ProbeSubnetThread(subnet, mHardwareAddressList, this);
@@ -148,10 +174,11 @@ public class ProbeNetworkFragment extends Fragment implements OnInteractionListe
                 ((address >>>= 8) & 0xFF));
     }
 
-    void updateUI(final String updateText) {
+    void updateStatus(final String updateText, final boolean clearAll) {
         mParentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if(clearAll)    mStatusTextView.setText("");
                 mStatusTextView.append("\n"+updateText);
             }
         });
@@ -180,12 +207,12 @@ public class ProbeNetworkFragment extends Fragment implements OnInteractionListe
     private void onSubnetProbed(String result) {
         // time to notify the main activity
         Log.d(TAG, "ProbeSubnetThread returned: "+result);
-        updateUI("Finished probing the network");
-        sendResultToActivity();
+        updateStatus("Finished probing the network", false);
+        updateButton("Probe again", true);
     }
 
     private void onHostProbed(String[] addressPair) {
-        updateUI("Found "+addressPair[0]+":"+addressPair[1]);
+        updateStatus("Found "+addressPair[0]+":"+addressPair[1], false);
         mMapping.put(addressPair[1], addressPair[0]);
     }
 }

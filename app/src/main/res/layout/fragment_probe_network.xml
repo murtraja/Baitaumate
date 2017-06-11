@@ -4,10 +4,37 @@
     android:layout_height="match_parent"
     tools:context="com.smb.murtraja.baitaumate.ProbeNetworkFragment">
 
-    <TextView
-        android:id="@+id/tv_probe_status"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_probe_network"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Probe Network" />
+
+            <Button
+                android:id="@+id/btn_probe_network_done"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Done" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_probe_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+    </LinearLayout>
 
 </FrameLayout>

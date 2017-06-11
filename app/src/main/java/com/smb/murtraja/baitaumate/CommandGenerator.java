@@ -20,7 +20,7 @@ public class CommandGenerator {
     private static String SET_ROUTER_PREFIX = "$";
     private static String SET_ROUTER_DELIMITER = ":";
 
-    private static String COMMAND_SUFFIX = "\n";
+    private static String COMMAND_SUFFIX = "";
 
 
     public static String generateSetColourCommand(int colour) {

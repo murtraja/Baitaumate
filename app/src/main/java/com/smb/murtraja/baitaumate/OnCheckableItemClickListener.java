@@ -47,6 +47,6 @@ public class OnCheckableItemClickListener implements AdapterView.OnItemClickList
             accessPointCheckBox.setChecked(true);
             mAccessPointsSelected.add(accessPoint);
         }
-        Toast.makeText(mContext, "You clicked on "+accessPoint+mAccessPointsSelected.size(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(mContext, "You clicked on "+accessPoint+mAccessPointsSelected.size(), Toast.LENGTH_SHORT).show();
     }
 }

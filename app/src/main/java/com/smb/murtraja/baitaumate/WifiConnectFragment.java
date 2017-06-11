@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class WifiConnectFragment extends Fragment implements OnInteractionListener {
@@ -50,6 +51,8 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
     private OnInteractionListener mListener;
 
     private TextView mStatusTextView;
+    private Button mConnectButton;
+    private Button mSkipButton;
 
     private boolean mConnected = false;
     private WifiManager mWifiManager;
@@ -64,7 +67,8 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         public void onFinish() {
             Log.d(MainActivity.TAG, "timer timed out!");
             unregisterReceiver();
-            sendResultToActivity();
+            mConnected = false;
+            connectionAttemptFinish();
         }
     };
     private WifiStateChangedActionReceiver mWifiStateChangedActionReceiver;
@@ -98,6 +102,7 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mAccessPointName = getArguments().getString(ARG_ACCESS_POINT);
+            mAccessPointName = String.format("\"%s\"", mAccessPointName);
             mPassword = getArguments().getString(ARG_PASSWORD);
             mResultType = (InteractionResultType) getArguments().getSerializable(ARG_RESULT_TYPE);
         }
@@ -142,17 +147,32 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mStatusTextView = (TextView) view.findViewById(R.id.tv_wifiConnectStatus);
-        mStatusTextView.setText("Now connecting to "+ mAccessPointName);
+        mStatusTextView = (TextView) view.findViewById(R.id.tv_wifi_connect_status);
+
+        mConnectButton = (Button) view.findViewById(R.id.btn_connect);
+        mConnectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                connectToAccessPoint();
+            }
+        });
+        mSkipButton = (Button) view.findViewById(R.id.btn_skip_connect);
+        mSkipButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendResultToActivity();
+            }
+        });
 
         mWifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-        mTimer.start();
         connectToAccessPoint();
     }
 
     private void connectToAccessPoint() {
-        mAccessPointName = String.format("\"%s\"", mAccessPointName);
+        updateButton("Connecting...", false);
+        mStatusTextView.setText("Now connecting to "+ mAccessPointName);
+        mTimer.start();
+
         WifiConfiguration wifiConfiguration = new WifiConfiguration();
         wifiConfiguration.SSID = mAccessPointName;
         if(mPassword == null || "".equals(mPassword)) {
@@ -176,6 +196,20 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         context.registerReceiver(mWifiStateChangedActionReceiver, stateChangedIntent);
     }
 
+    private void updateButton(String text, boolean enabled) {
+        mConnectButton.setText(text);
+        mConnectButton.setEnabled(enabled);
+    }
+
+    void connectionAttemptFinish() {
+        if(mConnected) {
+            mStatusTextView.setText("Successfully connected to "+mAccessPointName);
+            sendResultToActivity();
+        } else {
+            mStatusTextView.setText("Could not connect to "+mAccessPointName);
+            updateButton("Try again", true);
+        }
+    }
     public void sendResultToActivity() {
         Log.d(MainActivity.TAG, "WCFrag: sending result to activity "+mConnected);
         mListener.onInteraction(mResultType, mConnected);
@@ -191,12 +225,7 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
     public void onWifiStateChangedAction(boolean successful) {
         mTimer.cancel();
         mConnected = successful;
-        if(mConnected) {
-            mStatusTextView.setText("Successfully connected to "+mAccessPointName);
-        } else {
-            mStatusTextView.setText("Could not connect to "+mAccessPointName);
-        }
-        sendResultToActivity();
+        connectionAttemptFinish();
     }
     void updateStatusTextView() {
         getActivity().runOnUiThread(new Runnable() {
