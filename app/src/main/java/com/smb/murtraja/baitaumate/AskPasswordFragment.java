@@ -21,8 +21,7 @@ public class AskPasswordFragment extends Fragment {
     the password
 
      */
-
-
+    private static final String TAG = "APFrag";
     private static final String ARG_RESULT_TYPE = "RESULT_TYPE";
 
     private InteractionResultType mResultType;
@@ -95,7 +94,7 @@ public class AskPasswordFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnInteractionListener");
         }
-        Log.d(MainActivity.TAG, "inside on attach of fragment");
+        Log.d(TAG, "inside on attach of fragment");
     }
 
     @Override

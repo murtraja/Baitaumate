@@ -23,10 +23,8 @@ public class WifiStateChangedActionReceiver extends BroadcastReceiver {
     This class has gone into a lot of modification recently
     it used to receive supplicant state change events,
     now it only receives network state change events.
-    and that too it uses a deprecated function call
-    so i need
-        TODO: Not connected to WFN identification, and handling it accordingly
-        TODO: remove deprecated function calls
+
+    TODO: Not connected to WFN identification, and handling it accordingly
 
      */
 
@@ -37,7 +35,8 @@ public class WifiStateChangedActionReceiver extends BroadcastReceiver {
     InteractionResultType mResultType;
     OnInteractionListener mListener;
 
-    public WifiStateChangedActionReceiver(String accessPointName, WifiManager wifiManager, InteractionResultType resultType, OnInteractionListener listener) {
+    public WifiStateChangedActionReceiver(String accessPointName, WifiManager wifiManager,
+                                          InteractionResultType resultType, OnInteractionListener listener) {
         mAccessPointName = accessPointName;
         mWifiManager = wifiManager;
 

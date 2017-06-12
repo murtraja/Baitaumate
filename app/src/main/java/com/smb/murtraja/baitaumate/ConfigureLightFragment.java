@@ -35,6 +35,7 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
         2. errors if any
 
      */
+    private static final String TAG = "ConfLightFrag";
 
     private static final String ARG_RESULT_TYPE = "RESULT_TYPE";
 
@@ -129,7 +130,7 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
             throw new RuntimeException(context.toString()
                     + " must implement OnInteractionListener");
         }
-        Log.d(MainActivity.TAG, "inside on attach of fragment");
+        Log.d(TAG, "inside on attach of fragment");
     }
 
     @Override

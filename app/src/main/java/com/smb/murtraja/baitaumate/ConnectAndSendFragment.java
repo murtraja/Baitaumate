@@ -36,6 +36,7 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
         3. if it was, the reply string from the device
 
      */
+    private static final String TAG = "CSFrag";
 
     private static final String ARG_AP_NAME = "AP_NAME";
     private static final String ARG_COMMAND = "COMMAND";
@@ -120,7 +121,7 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
             throw new RuntimeException(context.toString()
                     + " must implement OnInteractionListener");
         }
-        Log.d(MainActivity.TAG, "inside on attach of fragment");
+        Log.d(TAG, "inside on attach of fragment");
     }
 
     @Override
@@ -144,7 +145,7 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
     private void onAccessPointConnected(boolean successful) {
         if(successful) {
             // now send command to the device
-            Log.d(MainActivity.TAG, "CSFrag: successfully connected to "+mAPName);
+            Log.d(TAG, "successfully connected to "+mAPName);
             String deviceIP = determineCurrentlyConnectedDeviceIP();
             CommandSender commandSender = new CommandSender(deviceIP, InteractionResultType.COMMAND_SENT, this);
             commandSender.send(mCommand);
@@ -169,7 +170,7 @@ public class ConnectAndSendFragment extends Fragment implements OnInteractionLis
         WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcpInfo = wifiManager.getDhcpInfo();
         String convertedAddress = getIPFromInt(dhcpInfo.serverAddress);
-        Log.d("DHCP", "device address: "+convertedAddress);
+        Log.d(TAG, "DHCP: device address: "+convertedAddress);
         return convertedAddress;
 
     }

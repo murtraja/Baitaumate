@@ -57,7 +57,7 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
 
      */
 
-    private static String TAG = "WifiModeActivity";
+    private static String TAG = "WMAct";
 
     private Activity mWifiModeActivity = null;
 
@@ -160,7 +160,7 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
     }
 
     private void onRouterSelected(String wifiNetworkName) {
-        Log.d(MainActivity.TAG, "received "+wifiNetworkName);
+        Log.d(TAG, "received "+wifiNetworkName);
         mWifiNetworkName = wifiNetworkName;
         AskPasswordFragment askPasswordFragment = AskPasswordFragment.newInstance(InteractionResultType.ROUTER_PASSWORD_SET);
         updateStatus("2. Enter the password for "+mWifiNetworkName+"\nLeave it blank if no password", true);
@@ -169,7 +169,7 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
     }
 
     private void onRouterPasswordSet(String password) {
-        Log.d(MainActivity.TAG, "received "+password);
+        Log.d(TAG, "received "+password);
         mPassword = password;
         WifiScanDisplayFragment wifiScanDisplayFragment =
                 WifiScanDisplayFragment.newInstance(true, true, InteractionResultType.MULTIPLE_ACCESS_POINT_SELECTED);
@@ -178,17 +178,17 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
     }
 
     private void onMultipleAccessPointsSelected(List<String> accessPoints) {
-        Log.d(MainActivity.TAG, "Got the following selected Access Points: " + accessPoints);
+        Log.d(TAG, "Got the following selected Access Points: " + accessPoints);
         mAccessPoints = accessPoints;
         connectToTheNextAccessPoint();
     }
 
     private void onCommandSent(String reply) {
-        Log.d(MainActivity.TAG, "Got this reply from device: "+reply);
+        Log.d(TAG, "Got this reply from device: "+reply);
         connectToTheNextAccessPoint();
     }
     private void onDebug(Object result) {
-        Log.d(MainActivity.TAG, "WifiModeActivity: returned from CS frag with "+result);
+        Log.d(TAG, "WifiModeActivity: returned from CS frag with "+result);
     }
 
     private void connectToTheNextAccessPoint() {

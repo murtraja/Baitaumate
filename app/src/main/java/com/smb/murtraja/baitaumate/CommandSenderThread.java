@@ -30,6 +30,9 @@ public class CommandSenderThread extends Thread {
     OUTPUT
         > the reply received as a string
     */
+    private static final String TAG = "CSThread";
+
+
     String mDeviceIP, mCommand;
     OnInteractionListener mListener;
     InteractionResultType mResultType;
@@ -53,7 +56,7 @@ public class CommandSenderThread extends Thread {
             mSocket = new Socket(mDeviceIP, DEVICE_PORT);
             mReader = new BufferedReader(new InputStreamReader(this.mSocket.getInputStream()));
             mPrintWriter = new PrintWriter(new DataOutputStream(this.mSocket.getOutputStream()));
-            Log.d(MainActivity.TAG, "init successful");
+            Log.d(TAG, "init successful");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,7 +65,7 @@ public class CommandSenderThread extends Thread {
 
     @Override
     public void run() {
-        Log.d(MainActivity.TAG, "Now running the thread...");
+        Log.d(TAG, "Now running the thread...");
         init();
         sendCommand();
         String reply = receiveReply();
@@ -71,27 +74,27 @@ public class CommandSenderThread extends Thread {
     }
 
     private void sendCommand() {
-        Log.d(MainActivity.TAG, "printWriter: "+mCommand);
+        Log.d(TAG, "printWriter: "+mCommand);
         mPrintWriter.write(mCommand);
         mPrintWriter.flush();
     }
 
     private String receiveReply() {
         String reply = "";
-        Log.d(MainActivity.TAG, "receiveReply: now starting loop");
+        Log.d(TAG, "receiveReply: now starting loop");
         String nextReplyLine = "";
         try {
             while((nextReplyLine = mReader.readLine())!=null) {
-                Log.d(MainActivity.TAG, "receiveReply: nextReplyLine: "+nextReplyLine);
+                Log.d(TAG, "receiveReply: nextReplyLine: "+nextReplyLine);
                 if("EOF".equals(nextReplyLine)) {
                     break;
                 }
-                reply += nextReplyLine;
+                reply += "\n" + nextReplyLine;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.d(MainActivity.TAG, "received reply: "+reply);
+        Log.d(TAG, "received reply: "+reply);
         return reply;
     }
 

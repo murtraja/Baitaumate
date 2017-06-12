@@ -17,6 +17,8 @@ import java.util.List;
 
 public class WifiScanReceiver extends BroadcastReceiver {
 
+
+    private static final String TAG = "WifiScanReceiver";
     WifiManager mWifiManager;
     InteractionResultType mResultType;
     OnInteractionListener mListener;
@@ -31,7 +33,7 @@ public class WifiScanReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         List<ScanResult> results = mWifiManager.getScanResults();
         int resultsSize = results.size();
-        Log.d(MainActivity.TAG, "inside on receive, total results: "+resultsSize);
+        Log.d(TAG, "inside on receive, total results: "+resultsSize);
         for (ScanResult result : results) {
             Log.d("MMR", result.SSID);
         }

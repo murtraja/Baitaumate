@@ -39,6 +39,8 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         > whether connected or not
         > the ssid to which the connection request was made
      */
+    private static final String TAG = "WCFrag";
+
 
     private static final String ARG_ACCESS_POINT = "ACCESS_POINT";
     private static final String ARG_PASSWORD = "PASSWORD";
@@ -65,7 +67,7 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
 
         @Override
         public void onFinish() {
-            Log.d(MainActivity.TAG, "timer timed out!");
+            Log.d(TAG, "timer timed out!");
             unregisterReceiver();
             mConnected = false;
             connectionAttemptFinish();
@@ -184,7 +186,7 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         int netId = mWifiManager.addNetwork(wifiConfiguration);
         boolean enableSuccess = mWifiManager.enableNetwork(netId, true);
         if(enableSuccess) {
-            Log.d(MainActivity.TAG, "Now enabling network "+mAccessPointName);
+            Log.d(TAG, "Now enabling network "+mAccessPointName);
         } else {
             throw new RuntimeException("Could not connect to "+mAccessPointName);
         }
@@ -211,7 +213,7 @@ public class WifiConnectFragment extends Fragment implements OnInteractionListen
         }
     }
     public void sendResultToActivity() {
-        Log.d(MainActivity.TAG, "WCFrag: sending result to activity "+mConnected);
+        Log.d(TAG, "sending result to activity "+mConnected);
         mListener.onInteraction(mResultType, mConnected);
     }
 

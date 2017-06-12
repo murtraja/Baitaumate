@@ -22,6 +22,7 @@ public class WifiResultsProcessor {
     But for Wifi mode, i just need to search for routers, so, i need a list of APs
     which are not devices
      */
+    private static final String TAG = "WifiResultsProcessor";
 
     private String octetRegex = "([A-Fa-f0-9]{2})";
     private String deviceRegex = String.format("^%s(:%s){5}$", "([A-Fa-f0-9]{2,3})", octetRegex);
@@ -54,7 +55,7 @@ public class WifiResultsProcessor {
                 }
             }
         }
-        Log.d(MainActivity.TAG, String.format("Converted %d results to %d unique results", mResults.size(), mUniqueAPs.size()));
+        Log.d(TAG, String.format("Converted %d results to %d unique results", mResults.size(), mUniqueAPs.size()));
         return mUniqueAPs;
     }
 
@@ -68,7 +69,7 @@ public class WifiResultsProcessor {
         ScanResult existingResult = mAccessPointMap.get(ssid);
         if(existingResult.level < currentResult.level) {
             //the new result has better level
-            Log.d(MainActivity.TAG, String.format("for SSID %s, replacing %d with %d", ssid, existingResult.level, currentResult.level));
+            Log.d(TAG, String.format("for SSID %s, replacing %d with %d", ssid, existingResult.level, currentResult.level));
             mAccessPointMap.put(ssid, currentResult);
         }
     }

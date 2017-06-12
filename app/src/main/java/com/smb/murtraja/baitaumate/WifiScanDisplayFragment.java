@@ -73,9 +73,8 @@ public class WifiScanDisplayFragment extends Fragment implements OnInteractionLi
     > How will this fragment communicate the results back to main activity
      */
 
+    private static final String TAG = "WSDFrag";
 
-
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SCAN_DEVICES = "SCAN_DEVICES";
     private static final String ARG_CHECKABLE = "CHECKABLE";
     private static final String ARG_RESULT_TYPE = "RESULT_TYPE";
@@ -199,7 +198,7 @@ public class WifiScanDisplayFragment extends Fragment implements OnInteractionLi
             throw new RuntimeException(context.toString()
                     + " must implement OnInteractionListener");
         }
-        Log.d(MainActivity.TAG, "inside on attach of fragment");
+        Log.d(TAG, "inside on attach of fragment");
     }
 
     @Override
@@ -247,10 +246,6 @@ public class WifiScanDisplayFragment extends Fragment implements OnInteractionLi
         } else {
             updateUIWithAccessPoints(accessPoints);
         }
-
-
-
-
         mScanAgainButton.setEnabled(true);
     }
 
@@ -277,7 +272,7 @@ public class WifiScanDisplayFragment extends Fragment implements OnInteractionLi
         mScanResultsListView.setAdapter(arrayAdapter);
         mScanResultsListView.setOnItemClickListener(new OnCheckableItemClickListener(mAccessPointsSelected, getActivity()));
 
-        //also set the buttons
+        // TODO: also set the buttons
     }
 
     private void onClickSelectAllButton() {

@@ -12,6 +12,7 @@ public class CommandSender implements OnInteractionListener {
     This class just starts the thread, and when the thread sends the command
     and gets the reply, this class just forwards that reply to the parent (listener)
      */
+    private static final String TAG = "CmdSender";
 
     String mDeviceIP;
     InteractionResultType mResultType;
@@ -26,7 +27,7 @@ public class CommandSender implements OnInteractionListener {
     }
 
     public void send(String command) {
-        Log.d(MainActivity.TAG, "CommandSender: now sending >> "+command);
+        Log.d(TAG, "CommandSender: now sending >> "+command);
         senderThread = new CommandSenderThread(mDeviceIP, command, InteractionResultType.COMMAND_SENT, this);
         senderThread.start();
     }

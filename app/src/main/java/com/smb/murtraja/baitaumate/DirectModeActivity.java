@@ -17,6 +17,8 @@ public class DirectModeActivity extends Activity implements OnInteractionListene
         3. App then tries to connect to it
         4. Once connected, user is able to configure it
      */
+    private static final String TAG = "DMAct";
+
 
     private FragmentManager mFragmentManager;
     private Fragment mCurrentlyAttachedFragment;

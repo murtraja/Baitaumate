@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
-    static String TAG = "MMR";
+    //static String TAG = "MMR";
     private WifiManager wifiManager;
     private TextView textView;
     private Button scanAgain;
