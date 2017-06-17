@@ -4,88 +4,50 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.List;
 
 public class MainActivity extends Activity {
 
-    //static String TAG = "MMR";
-    private WifiManager wifiManager;
-    private TextView textView;
-    private Button scanAgain;
+    private Button configureLightsButton;
+    private Button wifiModeConfigureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Context context = getApplicationContext();
-        wifiManager = (WifiManager)context.getSystemService(WIFI_SERVICE);
-        textView = (TextView)findViewById(R.id.tv_status);
-        scanAgain = (Button) findViewById(R.id.btn_scanAgain);
-        scanAgain.setOnClickListener(new View.OnClickListener() {
+        configureLightsButton = (Button) findViewById(R.id.btn_configure_lights);
+        configureLightsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startWifiScan();
+                onConfigureLights();
+            }
+        });
+
+        wifiModeConfigureButton= (Button) findViewById(R.id.btn_wifi_mode_config);
+        wifiModeConfigureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onWifiModeConfigure();
             }
         });
 
 
-        startWifiScan();
 
     }
 
-    private void startWifiScan() {
-        scanAgain.setEnabled(false);
-        final IntentFilter scanResultsIntent = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-
-    }
-    private void connectToAccessPoint(String ssid) {
-        ssid = String.format("\"%s\"", ssid);
-        WifiConfiguration wifiConfiguration = new WifiConfiguration();
-        wifiConfiguration.SSID = ssid;
-        wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-        int netId = wifiManager.addNetwork(wifiConfiguration);
-        wifiManager.enableNetwork(netId, true);
-        textView.setText(String.format("Now connecting to %s", ssid));
-
-        IntentFilter stateChangedIntent = new IntentFilter(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
-        //stateChangedIntent.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-
-
-
+    private void onWifiModeConfigure() {
+        Intent intent = new Intent(this, WifiModeActivity.class);
+        startActivity(intent);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        return;
-//        for(WifiConfiguration configuration : mWifiManager.getConfiguredNetworks()) {
-//            //Log.d(MainActivity.TAG, configuration.SSID);
-//            if(configuration.SSID.equals("\"Celerio\"")) {
-//                mWifiManager.enableNetwork(configuration.networkId, true);
-//            }
-//        }
-
+    private void onConfigureLights() {
+        Intent intent = new Intent(this, ConfigureLightsActivity.class);
+        startActivity(intent);
     }
 
 }
-
-/*
-
-
-
-
-
- */

@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -141,6 +144,14 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
     private void onProbeFinished(HashMap<String, String> mapping) {
         // TODO: now store this mapping for future use
         Log.d(TAG, "network prober returned to wifi mode activity" + mapping);
+        SharedPreferences preferences = this.getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        JSONObject jsonMapping = new JSONObject(mapping);
+        String stringMapping = jsonMapping.toString();
+        Log.d(TAG, "mapping: "+stringMapping);
+        editor.putString("mapping", stringMapping);
+        editor.commit();
+
     }
 
     private void onDebugNetworkProber(Object result) {
@@ -150,7 +161,7 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
 
     private void onRouterConnected(boolean connected) {
         if(connected) {
-            String arrayOfDeviceMAC[] = {"5c:cf:7f:c3:71:0c", "5c:cf:7f:c4:43:e5", "5c:cf:7f:c3:cc:22", "5c:cf:7f:c3:74:a6", "18:26:66:6f:b8:6f" };
+            String arrayOfDeviceMAC[] = {"5c:cf:7f:c3:71:0c", "5c:cf:7f:c4:43:e5", "5c:cf:7f:c3:cc:22", "5c:cf:7f:c3:74:a6" };//, "18:26:66:6f:b8:6f" };
             ArrayList<String> hardwareAddressList = new ArrayList<>(Arrays.asList(arrayOfDeviceMAC));
             ProbeNetworkFragment fragment = ProbeNetworkFragment.newInstance(hardwareAddressList, InteractionResultType.DEBUG);
             updateStatus("5. Finding devices on "+mWifiNetworkName, true);

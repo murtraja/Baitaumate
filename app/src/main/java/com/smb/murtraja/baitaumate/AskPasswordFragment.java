@@ -63,7 +63,7 @@ public class AskPasswordFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mPasswordEditText = (EditText) view.findViewById(R.id.et_password);
-        mPasswordEditText.setText("9823203952");
+        //mPasswordEditText.setText("9823203952");
         mSetPasswordButton = (Button) view.findViewById(R.id.btn_set_password);
         mSetPasswordTextView = (TextView) view.findViewById(R.id.tv_set_password);
         mSetPasswordButton.setOnClickListener(new View.OnClickListener() {
