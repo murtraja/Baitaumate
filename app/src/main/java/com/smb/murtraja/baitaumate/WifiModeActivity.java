@@ -151,18 +151,19 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         editor.putString("mapping", stringMapping);
         editor.commit();
         Log.d(TAG, String.format("Stored %s:%s in shared preferences", "mapping", stringMapping));
+        finish();
     }
 
     private void onDebugNetworkProber(Object result) {
         HashMap<String, String> mapping = (HashMap<String, String>) result;
-        Log.d(TAG, "network prober returned to wifi mode activity " + mapping);
+        Log.d(TAG, "DEBUG: network prober returned to wifi mode activity " + mapping);
     }
 
     private void onRouterConnected(boolean connected) {
         if(connected) {
             String arrayOfDeviceMAC[] = {"5c:cf:7f:c3:71:0c", "5c:cf:7f:c4:43:e5", "5c:cf:7f:c3:cc:22", "5c:cf:7f:c3:74:a6" };//, "18:26:66:6f:b8:6f" };
             ArrayList<String> hardwareAddressList = new ArrayList<>(Arrays.asList(arrayOfDeviceMAC));
-            ProbeNetworkFragment fragment = ProbeNetworkFragment.newInstance(hardwareAddressList, InteractionResultType.DEBUG);
+            ProbeNetworkFragment fragment = ProbeNetworkFragment.newInstance(hardwareAddressList, InteractionResultType.PROBE_FINISHED);
             updateStatus("5. Finding devices on "+mWifiNetworkName, true);
             setFragment(fragment);
 
