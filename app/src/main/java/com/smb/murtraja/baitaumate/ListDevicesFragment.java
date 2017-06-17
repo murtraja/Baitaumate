@@ -25,6 +25,8 @@ import java.util.List;
 public class ListDevicesFragment extends ListFragment implements AdapterView.OnItemClickListener{
 
     /*
+    currently this fragment just displays a list of Mac, and returns the clicked one
+
     This Fragment is responsible for listing all the devices
     in the wifi mode as of now and when clicked on a device,
     it will expand to show its configuration, scrollable
@@ -35,16 +37,16 @@ public class ListDevicesFragment extends ListFragment implements AdapterView.OnI
 
     PROCESS
         > display a list of devices
-        > on clicking it, expand it to show its configuration
+        > (TODO: future scope, on clicking it, expand it to show its configuration)
         > handle events properly
 
     OUTPUT
-        > nothing
+        > returns the Mac of the device clicked
 
      */
 
 
-    private static final String TAG = "LisDevicesFrag";
+    private static final String TAG = "ListDevicesFrag";
 
     private static final String ARG_RESULT_TYPE = "RESULT_TYPE";
     private static final String ARG_DEVICE_LIST = "DEVICE_LIST";
@@ -53,6 +55,7 @@ public class ListDevicesFragment extends ListFragment implements AdapterView.OnI
     private InteractionResultType mResultType;
 
     private ArrayList<String> mDeviceList;
+    private String mClickedMac = null;
 
     public ListDevicesFragment() {
         // Required empty public constructor
@@ -125,12 +128,14 @@ public class ListDevicesFragment extends ListFragment implements AdapterView.OnI
     }
 
     public void sendResultToActivity() {
-        Log.d(TAG, "sending result to activity "+"");
-        mListener.onInteraction(mResultType, "");
+        Log.d(TAG, "sending result to activity "+mClickedMac);
+        mListener.onInteraction(mResultType, mClickedMac);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        mClickedMac = (String) ((TextView)view).getText();
+        Log.d(TAG, "clicked on "+mClickedMac);
+        sendResultToActivity();
     }
 }

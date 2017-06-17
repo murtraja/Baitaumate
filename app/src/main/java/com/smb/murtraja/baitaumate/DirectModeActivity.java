@@ -68,7 +68,7 @@ public class DirectModeActivity extends Activity implements OnInteractionListene
 
     private void onAccessPointConnected(String apName) {
         mAccessPointName = apName;
-        ConfigureLightFragment configFragment = ConfigureLightFragment.newInstance(InteractionResultType.DEVICE_CONFIG_DONE);
+        ConfigureLightFragment configFragment = ConfigureLightFragment.newInstance(null, InteractionResultType.DEVICE_CONFIG_DONE);
         setFragment(configFragment);
     }
 }

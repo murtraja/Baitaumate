@@ -6,6 +6,8 @@ import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -37,7 +39,10 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
      */
     private static final String TAG = "ConfLightFrag";
 
+    private static final String ARG_DEVICE_IP_ADDRESS = "DEVICE_IP_ADDRESS";
     private static final String ARG_RESULT_TYPE = "RESULT_TYPE";
+
+    private String mDeviceIpAddress = null;
 
     private InteractionResultType mResultType;
     private OnInteractionListener mListener;
@@ -46,16 +51,18 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
     Button mConfigDoneButton;
     ColorPickerView mColorPicker;
     TextView mCommandStatusTextView;
+    private Activity mParentActivity;
 
     public ConfigureLightFragment() {
         // Required empty public constructor
     }
 
 
-    public static ConfigureLightFragment newInstance(InteractionResultType resultType) {
+    public static ConfigureLightFragment newInstance(String deviceIpAddress, InteractionResultType resultType) {
         ConfigureLightFragment fragment = new ConfigureLightFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_RESULT_TYPE, resultType);
+        args.putString(ARG_DEVICE_IP_ADDRESS, deviceIpAddress);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +72,7 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mResultType = (InteractionResultType) getArguments().getSerializable(ARG_RESULT_TYPE);
+            mDeviceIpAddress = getArguments().getString(ARG_DEVICE_IP_ADDRESS);
         }
     }
 
@@ -95,6 +103,8 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
                 onClickConfigDoneButton();
             }
         });
+
+        if(mDeviceIpAddress == null)    mDeviceIpAddress = determineCurrentlyConnectedDeviceIP();
     }
 
     private void onClickConfigDoneButton() {
@@ -102,10 +112,9 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
     }
 
     private void onClickSetColourButton() {
-        mCommandStatusTextView.setText("Now sending command...");
+        mCommandStatusTextView.setText("Now changing colour...");
         int color = mColorPicker.getColor();
-        String deviceIP = determineCurrentlyConnectedDeviceIP();
-        CommandSender commandSender = new CommandSender(deviceIP, InteractionResultType.COMMAND_SENT, this);
+        CommandSender commandSender = new CommandSender(mDeviceIpAddress, InteractionResultType.COMMAND_SENT, this);
         String command = CommandGenerator.generateSetColourCommand(color);
         commandSender.send(command);
     }
@@ -125,12 +134,19 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
 
     private void onAttachInit(Context context) {
         if (context instanceof OnInteractionListener) {
-            mListener = (OnInteractionListener) context;
+            Fragment parentFragment = getParentFragment();
+            if(parentFragment == null) {
+                mListener = (OnInteractionListener) context;
+                mParentActivity = getActivity();
+            }
+            else {
+                mListener = (OnInteractionListener) parentFragment;
+                mParentActivity = parentFragment.getActivity();
+            }
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnInteractionListener");
         }
-        Log.d(TAG, "inside on attach of fragment");
     }
 
     @Override
@@ -141,8 +157,14 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
 
     }
 
-    private void onCommandSent(String reply) {
-        mCommandStatusTextView.setText(reply);
+    private void onCommandSent(final String reply) {
+        mParentActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mCommandStatusTextView.setText(reply);
+            }
+        });
+
     }
 
     @Override
@@ -154,9 +176,20 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
         mListener.onInteraction(mResultType, null);
     }
 
-    private String determineCurrentlyConnectedDeviceIP() {
-        // TODO: use some DHCP service to figure out the gateway IP instead of hardcoding
-        return "192.168.43.1";
+    //TODO: all these network related functions need to be in a separate static class
 
+    private String determineCurrentlyConnectedDeviceIP() {
+        WifiManager wifiManager = (WifiManager) mParentActivity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        DhcpInfo info = wifiManager.getDhcpInfo();
+        String gateway = intToIp(info.gateway);
+        return gateway;
+    }
+
+    public String intToIp(int address) {
+        //https://stackoverflow.com/questions/5387036/programmatically-getting-the-gateway-and-subnet-mask-details
+        return  ((address & 0xFF) + "." +
+                ((address >>>= 8) & 0xFF) + "." +
+                ((address >>>= 8) & 0xFF) + "." +
+                ((address >>>= 8) & 0xFF));
     }
 }

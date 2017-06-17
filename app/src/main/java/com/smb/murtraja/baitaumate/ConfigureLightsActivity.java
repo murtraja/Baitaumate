@@ -25,6 +25,7 @@ public class ConfigureLightsActivity extends Activity implements OnInteractionLi
     private Fragment mCurrentlyAttachedFragment;
 
     private JSONObject mMapping;
+    private ArrayList<String> mDeviceList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +35,15 @@ public class ConfigureLightsActivity extends Activity implements OnInteractionLi
         mConfigureLightsActivity = this;
         
         mMapping = getMappingFromSharedPreferences();
-        ArrayList<String> deviceList = getDeviceListFromMapping();
+        mDeviceList = getDeviceListFromMapping(mMapping);
         
-        ListDevicesFragment fragment = ListDevicesFragment.newInstance(deviceList, InteractionResultType.DEVICE_SELECTED_FOR_CONFIG);
+        ListDevicesFragment fragment = ListDevicesFragment.newInstance(mDeviceList, InteractionResultType.DEVICE_SELECTED_FOR_CONFIG);
         setFragment(fragment);
     }
 
-    private ArrayList<String> getDeviceListFromMapping() {
+    private ArrayList<String> getDeviceListFromMapping(JSONObject mapping) {
         ArrayList<String> deviceList = new ArrayList<>();
-        Iterator<String> iterator = mMapping.keys();
+        Iterator<String> iterator = mapping.keys();
         while(iterator.hasNext()) {
             String deviceMAC = iterator.next();
             deviceList.add(deviceMAC);
@@ -62,7 +63,37 @@ public class ConfigureLightsActivity extends Activity implements OnInteractionLi
 
     @Override
     public void onInteraction(InteractionResultType resultType, Object result) {
+        if( resultType == InteractionResultType.DEVICE_SELECTED_FOR_CONFIG) {
+            onDeviceSelectedForConfig((String)result);
+        }
+        
+        else if (resultType == InteractionResultType.DEVICE_CONFIG_DONE) {
+            onDeviceConfigDone(result);
+        }
+    }
 
+    private void onDeviceConfigDone(Object result) {
+        // TODO: what is the value of result, why null?
+        ListDevicesFragment fragment = ListDevicesFragment.newInstance(mDeviceList, InteractionResultType.DEVICE_SELECTED_FOR_CONFIG);
+        setFragment(fragment);
+    }
+
+    private void onDeviceSelectedForConfig(String deviceMac) {
+        String deviceIp = getDeviceIpfromMac(deviceMac);
+        Log.d(TAG, "Now configuring "+deviceMac+ "@"+deviceIp);
+
+        ConfigureLightFragment fragment = ConfigureLightFragment.newInstance(deviceIp, InteractionResultType.DEVICE_CONFIG_DONE);
+        setFragment(fragment);
+    }
+
+    private String getDeviceIpfromMac(String deviceMac) {
+        String mac = null;
+        try {
+            mac = mMapping.getString(deviceMac);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return mac;
     }
 
     JSONObject getMappingFromSharedPreferences() {

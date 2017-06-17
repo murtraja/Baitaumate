@@ -89,15 +89,15 @@ public class ProbeNetworkFragment extends Fragment implements OnInteractionListe
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        initAttach(context);
+        onAttachInit(context);
     }
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        initAttach(activity);
+        onAttachInit(activity);
     }
 
-    private void initAttach(Context context) {
+    private void onAttachInit(Context context) {
         if (context instanceof OnInteractionListener) {
             Fragment parentFragment = getParentFragment();
             if(parentFragment == null) {
