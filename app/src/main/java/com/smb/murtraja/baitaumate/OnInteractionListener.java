@@ -6,6 +6,9 @@ package com.smb.murtraja.baitaumate;
 
 public interface OnInteractionListener {
     public enum InteractionResultType {
+
+        /* WifiModeConfig related enums*/
+
         ROUTER_SELECTED,
         ROUTER_CONNECTED,
         ROUTER_PASSWORD_SET,
@@ -22,6 +25,10 @@ public interface OnInteractionListener {
         PROBE_FINISHED,
 
         DEVICE_CONFIG_DONE,
+
+        /* ConfigureLights related enums */
+
+        DEVICE_SELECTED_FOR_CONFIG,
 
         DEBUG,
         ERROR

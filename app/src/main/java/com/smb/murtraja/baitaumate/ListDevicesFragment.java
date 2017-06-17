@@ -3,6 +3,7 @@ package com.smb.murtraja.baitaumate;
 import com.smb.murtraja.baitaumate.OnInteractionListener.InteractionResultType;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,12 +12,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class ListDevicesFragment extends Fragment {
+
+public class ListDevicesFragment extends ListFragment implements AdapterView.OnItemClickListener{
 
     /*
     This Fragment is responsible for listing all the devices
@@ -41,18 +47,22 @@ public class ListDevicesFragment extends Fragment {
     private static final String TAG = "LisDevicesFrag";
 
     private static final String ARG_RESULT_TYPE = "RESULT_TYPE";
+    private static final String ARG_DEVICE_LIST = "DEVICE_LIST";
 
     private OnInteractionListener mListener;
     private InteractionResultType mResultType;
+
+    private ArrayList<String> mDeviceList;
 
     public ListDevicesFragment() {
         // Required empty public constructor
     }
 
-    public static ListDevicesFragment newInstance(InteractionResultType resultType) {
+    public static ListDevicesFragment newInstance(ArrayList<String> deviceList, InteractionResultType resultType) {
         ListDevicesFragment fragment = new ListDevicesFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_RESULT_TYPE, resultType);
+        args.putSerializable(ARG_DEVICE_LIST, deviceList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,18 +72,24 @@ public class ListDevicesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mResultType = (InteractionResultType) getArguments().getSerializable(ARG_RESULT_TYPE);
+            mDeviceList = (ArrayList<String>) getArguments().getSerializable(ARG_DEVICE_LIST);
         }
     }
 
+    /*
+    using the default ListView layout for ListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_list_devices, container, false);
     }
-
+    */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        ArrayAdapter adapter = new ArrayAdapter((Context)mListener, android.R.layout.simple_list_item_1, mDeviceList);
+        setListAdapter(adapter);
+        getListView().setOnItemClickListener(this);
 
     }
 
@@ -111,5 +127,10 @@ public class ListDevicesFragment extends Fragment {
     public void sendResultToActivity() {
         Log.d(TAG, "sending result to activity "+"");
         mListener.onInteraction(mResultType, "");
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
     }
 }

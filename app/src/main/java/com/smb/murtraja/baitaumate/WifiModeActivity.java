@@ -82,7 +82,7 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
 
         mWifiModeActivity = this;
 
-        //*
+        /*
         boolean scanDevices = false, checkable = false;
         WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(
                 scanDevices, checkable, InteractionResultType.ROUTER_SELECTED);
@@ -90,11 +90,11 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         setFragment(wifiScanDisplayFragment);
         //*/
 
-        /*
+        //*
         // for debugging purposes:
-        String arrayOfDeviceMAC[] = {"5e:cf:7f:c3:71:0c", "5e:cf:7f:c4:43:e5", "5e:cf:7f:c3:cc:22", "5e:cf:7f:c3:74:a6", "18:26:66:6f:b8:6f" };
+        String arrayOfDeviceMAC[] = {"5c:cf:7f:c3:71:0c", "5c:cf:7f:c4:43:e5", "5c:cf:7f:c3:cc:22", "5c:cf:7f:c3:74:a6" }; //, "18:26:66:6f:b8:6f" };
         ArrayList<String> hardwareAddressList = new ArrayList<>(Arrays.asList(arrayOfDeviceMAC));
-        ProbeNetworkFragment fragment = ProbeNetworkFragment.newInstance(hardwareAddressList, InteractionResultType.DEBUG);
+        ProbeNetworkFragment fragment = ProbeNetworkFragment.newInstance(hardwareAddressList, InteractionResultType.PROBE_FINISHED);
         setFragment(fragment);
         //*/
     }
@@ -142,7 +142,6 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
     }
 
     private void onProbeFinished(HashMap<String, String> mapping) {
-        // TODO: now store this mapping for future use
         Log.d(TAG, "network prober returned to wifi mode activity" + mapping);
         SharedPreferences preferences = this.getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -151,7 +150,7 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         Log.d(TAG, "mapping: "+stringMapping);
         editor.putString("mapping", stringMapping);
         editor.commit();
-
+        Log.d(TAG, String.format("Stored %s:%s in shared preferences", "mapping", stringMapping));
     }
 
     private void onDebugNetworkProber(Object result) {
