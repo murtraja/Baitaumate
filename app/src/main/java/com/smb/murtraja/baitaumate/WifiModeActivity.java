@@ -82,7 +82,7 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
 
         mWifiModeActivity = this;
 
-        /*
+        //*
         boolean scanDevices = false, checkable = false;
         WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(
                 scanDevices, checkable, InteractionResultType.ROUTER_SELECTED);
@@ -90,7 +90,7 @@ public class WifiModeActivity extends Activity implements OnInteractionListener 
         setFragment(wifiScanDisplayFragment);
         //*/
 
-        //*
+        /*
         // for debugging purposes:
         String arrayOfDeviceMAC[] = {"5c:cf:7f:c3:71:0c", "5c:cf:7f:c4:43:e5", "5c:cf:7f:c3:cc:22", "5c:cf:7f:c3:74:a6" }; //, "18:26:66:6f:b8:6f" };
         ArrayList<String> hardwareAddressList = new ArrayList<>(Arrays.asList(arrayOfDeviceMAC));

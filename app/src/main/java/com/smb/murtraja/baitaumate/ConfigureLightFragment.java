@@ -85,10 +85,10 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mColorPicker = (ColorPickerView) view.findViewById(R.id.cpv_pickColour);
-        mCommandStatusTextView = (TextView) view.findViewById(R.id.tv_commandStatus);
+        mColorPicker = (ColorPickerView) view.findViewById(R.id.cpv_pick_colour);
+        mCommandStatusTextView = (TextView) view.findViewById(R.id.tv_command_status);
 
-        this.mSetColourButton = (Button) view.findViewById(R.id.btn_setColour);
+        this.mSetColourButton = (Button) view.findViewById(R.id.btn_set_colour);
         this.mSetColourButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,7 +96,7 @@ public class ConfigureLightFragment extends Fragment implements OnInteractionLis
             }
         });
 
-        mConfigDoneButton = (Button) view.findViewById(R.id.btn_configDone);
+        mConfigDoneButton = (Button) view.findViewById(R.id.btn_config_done);
         mConfigDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

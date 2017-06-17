@@ -136,15 +136,15 @@ public class WifiScanDisplayFragment extends Fragment implements OnInteractionLi
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mScanAgainButton = (Button) view.findViewById(R.id.btn_scanAgain);
+        mScanAgainButton = (Button) view.findViewById(R.id.btn_scan_again);
         mScanAgainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startWifiScan();
             }
         });
-        mScanResultsListView = (ListView) view.findViewById(R.id.lv_scanResults);
-        mStatusTextView = (TextView) view.findViewById(R.id.tv_wifiScanDisplayStatus);
+        mScanResultsListView = (ListView) view.findViewById(R.id.lv_scan_results);
+        mStatusTextView = (TextView) view.findViewById(R.id.tv_wifi_scan_display_status);
 
         this.wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 

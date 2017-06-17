@@ -12,7 +12,7 @@
         android:orientation="vertical">
 
         <com.github.danielnilsson9.colorpickerview.view.ColorPickerView
-            android:id="@+id/cpv_pickColour"
+            android:id="@+id/cpv_pick_colour"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             picker:alphaChannelVisible="false" />
@@ -23,14 +23,14 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_setColour"
+                android:id="@+id/btn_set_colour"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Set Colour" />
 
             <Button
-                android:id="@+id/btn_configDone"
+                android:id="@+id/btn_config_done"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -38,7 +38,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_commandStatus"
+            android:id="@+id/tv_command_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Device reply will appear here" />
