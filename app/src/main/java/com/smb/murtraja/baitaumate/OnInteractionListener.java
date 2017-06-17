@@ -30,6 +30,10 @@ public interface OnInteractionListener {
 
         DEVICE_SELECTED_FOR_CONFIG,
 
+        /* Direct Mode related enums */
+
+        ACCESS_POINT_SELECTED,
+
         DEBUG,
         ERROR
     }

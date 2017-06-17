@@ -15,6 +15,7 @@ public class MainActivity extends Activity {
 
     private Button configureLightsButton;
     private Button wifiModeConfigureButton;
+    private Button directModeConfigureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +37,19 @@ public class MainActivity extends Activity {
             }
         });
 
+        directModeConfigureButton = (Button) findViewById(R.id.btn_direct_mode_config);
+        directModeConfigureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onDirectModeConfigure();
+            }
+        });
 
+    }
 
+    private void onDirectModeConfigure() {
+        Intent intent = new Intent(this, DirectModeActivity.class);
+        startActivity(intent);
     }
 
     private void onWifiModeConfigure() {

@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class DirectModeActivity extends Activity implements OnInteractionListene
     private FragmentManager mFragmentManager;
     private Fragment mCurrentlyAttachedFragment;
 
-    private String mAccessPointName;
+    private String mDeviceApToBeConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class DirectModeActivity extends Activity implements OnInteractionListene
 
         boolean scanDevices = true, checkable = false;
         WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(
-                scanDevices, checkable, InteractionResultType.ACCESS_POINT_CONNECTED);
+                scanDevices, checkable, InteractionResultType.ACCESS_POINT_SELECTED);
         setFragment(wifiScanDisplayFragment);
     }
 
@@ -49,8 +50,11 @@ public class DirectModeActivity extends Activity implements OnInteractionListene
 
     @Override
     public void onInteraction(InteractionResultType resultType, Object result) {
-        if(resultType == InteractionResultType.ACCESS_POINT_CONNECTED) {
-            onAccessPointConnected(((List<String>) result).get(0));
+        if( resultType == InteractionResultType.ACCESS_POINT_SELECTED) {
+            onAccessPointSelected(((List<String>) result).get(0));
+        }
+        else if(resultType == InteractionResultType.ACCESS_POINT_CONNECTED) {
+            onAccessPointConnected((Boolean)result);
         }
 
         else if(resultType == InteractionResultType.DEVICE_CONFIG_DONE) {
@@ -58,17 +62,30 @@ public class DirectModeActivity extends Activity implements OnInteractionListene
         }
     }
 
+    private void onAccessPointSelected(String accessPointName) {
+        mDeviceApToBeConnected = accessPointName;
+        WifiConnectFragment connectFragment = WifiConnectFragment.newInstance(
+                mDeviceApToBeConnected, "", InteractionResultType.ACCESS_POINT_CONNECTED);
+        Log.d(TAG, "Now connecting to "+mDeviceApToBeConnected+" in direct mode");
+        setFragment(connectFragment);
+    }
+
     private void onDeviceConfigDone(Object result) {
         // set the previous fragment
         boolean scanDevices = true, checkable = false;
         WifiScanDisplayFragment wifiScanDisplayFragment = WifiScanDisplayFragment.newInstance(
-                scanDevices, checkable, InteractionResultType.ACCESS_POINT_CONNECTED);
+                scanDevices, checkable, InteractionResultType.ACCESS_POINT_SELECTED);
         setFragment(wifiScanDisplayFragment);
     }
 
-    private void onAccessPointConnected(String apName) {
-        mAccessPointName = apName;
-        ConfigureLightFragment configFragment = ConfigureLightFragment.newInstance(null, InteractionResultType.DEVICE_CONFIG_DONE);
-        setFragment(configFragment);
+    private void onAccessPointConnected(Boolean isConnected) {
+        if(isConnected) {
+            ConfigureLightFragment configFragment = ConfigureLightFragment.newInstance(null, InteractionResultType.DEVICE_CONFIG_DONE);
+            setFragment(configFragment);
+        } else {
+            Log.d(TAG, "failed to connect to "+ mDeviceApToBeConnected);
+        }
+
+
     }
 }

@@ -23,4 +23,13 @@
         android:layout_alignBaseline="@+id/btn_configure_lights"
         android:layout_alignBottom="@+id/btn_configure_lights"
         android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/btn_direct_mode_config"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_wifi_mode_config"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp"
+        android:text="Direct Mode Config" />
 </RelativeLayout>
